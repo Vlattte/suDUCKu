@@ -57,10 +57,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Cell.cs" />
+    <Compile Include="Assets\Scripts\GenerateButtonCells.cs" />
     <Compile Include="Assets\Scripts\SudokuGenerator.cs" />
+    <Compile Include="Assets\Scripts\ButtonCell.cs" />
+    <Compile Include="Assets\Scripts\ClearCell.cs" />
     <Compile Include="Assets\Scripts\SuduckuGrid.cs" />
     <Compile Include="Assets\Scripts\SudokuSolver.cs" />
-    <Compile Include="Assets\Scripts\EnterCells.cs" />
+    <Compile Include="Assets\Scripts\NoteButton.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Scripts\text.txt" />

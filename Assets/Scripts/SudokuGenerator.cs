@@ -9,7 +9,6 @@ public class SudokuGenerator : MonoBehaviour
     private bool isGenerated;
     private Cell[,] cells;
 
-
     private void Update()
     {
         if (SuduckuTable != null && !isGenerated)
@@ -27,6 +26,8 @@ public class SudokuGenerator : MonoBehaviour
         }
     }
 
+    //if sudoku isn't solvable
+    //generate again
     public void GenerateAgain()
     {
         SuduckuTable.RemoveRange(0, SuduckuTable.Count);
@@ -41,10 +42,6 @@ public class SudokuGenerator : MonoBehaviour
 
     void GenerateBaseTable()
     {
-        GameObject temp = SuduckuTable[0];
-        SuduckuTable.Remove(temp);
-        SuduckuTable.Insert(SuduckuTable.Count, temp);
-
         int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         int k = -1;
 
@@ -61,6 +58,7 @@ public class SudokuGenerator : MonoBehaviour
         }
     }
 
+    //GENERATING RANDOM SUDOKU
 
     void RandomMixing()
     {
@@ -235,4 +233,6 @@ public class SudokuGenerator : MonoBehaviour
         }
         return cell_numbers;
     }
+
+    //////////////////////////
 }
