@@ -8,6 +8,10 @@ public class ButtonCell : MonoBehaviour
     private int buttonValue;
     private SuduckuGrid GridManager;
     public Text textNumber;
+    public Image image;
+
+    //sprites of numbers to show
+    public Sprite[] imageNumbersArray;
 
     private void Start()
     {
@@ -27,7 +31,9 @@ public class ButtonCell : MonoBehaviour
         set 
         { 
             buttonValue = value;
-            textNumber.text = buttonValue.ToString();
+            textNumber.gameObject.SetActive(false);
+            image.gameObject.SetActive(true);
+            image.sprite = imageNumbersArray[value - 1];
         }
     }
 

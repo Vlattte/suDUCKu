@@ -5,6 +5,7 @@ using UnityEngine;
 public class GenerateButtonCells : MonoBehaviour
 {
     private float xPos, yPos;
+    private Vector3 firstButtonCellPos;
 
     public GameObject gridParent;
     public GameObject cellButtonPrefab;
@@ -20,8 +21,10 @@ public class GenerateButtonCells : MonoBehaviour
         buttons = new List<GameObject>();
         isButtonsSpawned = false;
         grid = gridParent.GetComponent<SuduckuGrid>();
-        xPos = grid.firstX;
-        yPos = grid.lastY;
+
+        firstButtonCellPos = GameObject.FindGameObjectWithTag("firstButtonCellPos").transform.position;
+        xPos = firstButtonCellPos.x;
+        yPos = firstButtonCellPos.y;
     }
 
     private void Update()
@@ -35,9 +38,6 @@ public class GenerateButtonCells : MonoBehaviour
 
     void CreateCells()
     {
-        xPos -= 9 * grid.cellRadius;
-        yPos -= 12 * grid.cellRadius;
-
         for (int i = 0; i < 9; i++)
         {
             Vector2 curCellPos = new Vector2(xPos + i * grid.cellRadius * 2 + grid.cellRadius, yPos);
@@ -56,7 +56,7 @@ public class GenerateButtonCells : MonoBehaviour
         clearCell.transform.SetParent(this.transform);
 
         //create note button
-        var noteBtnCell = Instantiate(noteBtnCellPrefab, new Vector2(xPos + 4*grid.cellRadius, yPos - 2 * grid.cellRadius), Quaternion.identity);
+        var noteBtnCell = Instantiate(noteBtnCellPrefab, new Vector2(xPos + 3*grid.cellRadius, yPos - 2 * grid.cellRadius), Quaternion.identity);
         noteBtnCell.transform.SetParent(this.transform);
     }
 }

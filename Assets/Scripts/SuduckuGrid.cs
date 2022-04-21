@@ -9,6 +9,9 @@ public class SuduckuGrid : MonoBehaviour
     public float cellRadius;
     private float cellDiameter;
     public float firstX, lastY;
+    private float offsetX, offsetY;
+    private float offsetConst;
+    private Vector3 gridLeftUpperCorner;
 
     public List<GameObject> suduckuTable;
     private Cell[,] grid;
@@ -19,7 +22,7 @@ public class SuduckuGrid : MonoBehaviour
     public bool isGenerated;                // bool for EnterCells to begin spawning buttons
     public bool isEnterBigNumbers;
 
-
+    private int countMistakes;
     private int activeCellX, activeCellY;
 
     private void Start()
@@ -30,8 +33,13 @@ public class SuduckuGrid : MonoBehaviour
 
         isGenerated = false;
         isEnterBigNumbers = true;
-        cellDiameter = gridSizeX/9;
-        cellRadius = cellDiameter/2;
+        cellDiameter = cellRadius * 2;
+
+        gridLeftUpperCorner = GameObject.FindGameObjectWithTag("fisrtCellLeftUpperCorner").transform.position;
+
+        offsetConst = 0.3f;
+        offsetX = 0;
+        offsetY = 0;
 
         suduckuTable = new List<GameObject>();
         grid = new Cell[9, 9];
@@ -42,14 +50,24 @@ public class SuduckuGrid : MonoBehaviour
 
     void CreateGrid()
     {
-        Vector3 gridLeftUpperCorner = transform.position - Vector3.right * gridSizeX / 2 + Vector3.up * gridSizeY / 2;
-
         for (int y = 0; y < 9; y++)
         {
             for (int x = 0; x < 9; x++)
             {
-                Vector3 curCellPos = gridLeftUpperCorner + (x * cellDiameter + cellRadius) * Vector3.right
-                                                         + (y * cellDiameter + cellRadius) * Vector3.down;
+                if (x % 3 == 0 && x != 0)
+                {
+                    offsetX += 0.7f;
+                    Debug.Log(offsetX);
+                }
+
+                if (y % 3 == 0 && x == 0 && y!=0)
+                {
+                    offsetY += 0.7f;
+                }
+
+                Vector3 curCellPos = gridLeftUpperCorner + (x * cellDiameter + cellRadius + offsetX) * Vector3.right
+                                                         + (y * cellDiameter + cellRadius + offsetY) * Vector3.down
+                                                         + (-1 * Vector3.forward);
 
                 if (x == 0 && y == 0)
                     firstX = curCellPos.x;
@@ -66,8 +84,19 @@ public class SuduckuGrid : MonoBehaviour
                 newCell.transform.SetParent(this.transform);
                 suduckuTable.Add(newCell as GameObject);
             }
+            offsetX = 0;
         }
         generator.SuduckuTable = suduckuTable;
+    }
+
+    public int ManageMistakesCount
+    {
+        set 
+        { 
+            countMistakes++; 
+            if(countMistakes >=3)
+                Application.Quit();
+        }
     }
 
     public void SetActiveCell(int x, int y)

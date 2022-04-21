@@ -9,7 +9,7 @@ public class Cell : MonoBehaviour
     //values
     private int mainValue;
     private int userValue;
-    private int hintValue;
+    private bool[] hintValuesInCell; //first element to check existence of any numbers
     public GameObject[] hintValues;
 
     public Sprite[] imageNumber;
@@ -39,13 +39,17 @@ public class Cell : MonoBehaviour
     private void Start()
     {
         GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
-        
+
+        hintValuesInCell = new bool[10];
+        for (int i = 0; i < 10; i++)
+            hintValuesInCell[i] = false;
+
         notActiveColor = Color.white;
         activeColor = new Color(0.6556604f, 0.896965f, 1);
         mistakeColor = new Color(0.5960785f, 0, 0);
 
-        notChangableNumber = new Color(0, 0, 0);
-        changableNumber = new Color(0.1960784f, 0.1960784f, 0.1960784f);
+        notChangableNumber = new Color(0.4056604f, 0.2034299f, 0.0478373f);
+        changableNumber = new Color(0, 0, 0);
     }
 
     public Cell(int _gridPosX, int _gridPosY, Vector2 _worldPos)
@@ -82,7 +86,6 @@ public class Cell : MonoBehaviour
         get { return worldPos; }
         set { worldPos = value; }
     }
-
 
     public void SetNumber(int number)
     {
@@ -121,9 +124,9 @@ public class Cell : MonoBehaviour
             {
                 userValue = number;
                 if (userValue != mainValue)
-                    backImage.color = mistakeColor;
-                else if (backImage.color == mistakeColor && userValue == mainValue)
-                    backImage.color = activeColor;
+                    textNumber.color = mistakeColor;
+                else if (textNumber.color == mistakeColor && userValue == mainValue)
+                    textNumber.color = changableNumber;
 
                 textNumber.text = userValue.ToString();
             } 
@@ -132,24 +135,22 @@ public class Cell : MonoBehaviour
 
     public void SetLittleNumber(int number)
     {
-        if(hintValue == number)
+        if (userValue != 0)
         {
-            hintValues[number - 1].SetActive(false);
+            ClearCell();
+        }
+
+        Color temp_color = hintValues[number - 1].GetComponent<Image>().color;
+        if (hintValuesInCell[number] == true)
+        {
+            hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 0f);
         }
         else
         {
-            hintValue = number;
-
-            if (hintValue == 0)
-            {
-                Debug.Log("HOW DID YOU ENTER ZERO?!");
-                return;
-            }
-            else
-            {
-                hintValues[number - 1].SetActive(true);
-            }
+            hintValuesInCell[number] = true;
+            hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 1f);
         }
+
     }
 
     private void OnMouseDown()
@@ -169,6 +170,8 @@ public class Cell : MonoBehaviour
     {
         if (isEmpty)
         {
+            //if GetEnterModeStatus == true
+            //big numbers
             if (GridManager.GetEnterModeStatus)
             {
                 textNumber.text = " ";
@@ -181,6 +184,7 @@ public class Cell : MonoBehaviour
                     note.SetActive(false);
                 }
             }
+            userValue = 0;
         }
     }
 }
