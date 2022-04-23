@@ -11,7 +11,7 @@ public class SuduckuGrid : MonoBehaviour
     public float firstX, lastY;
     private float offsetX, offsetY;
     private float offsetConst;
-    private Vector3 gridLeftUpperCorner;
+    private Vector3 gridLeftCornerPos;
 
     public List<GameObject> suduckuTable;
     private Cell[,] grid;
@@ -35,7 +35,7 @@ public class SuduckuGrid : MonoBehaviour
         isEnterBigNumbers = true;
         cellDiameter = cellRadius * 2;
 
-        gridLeftUpperCorner = GameObject.FindGameObjectWithTag("fisrtCellLeftUpperCorner").transform.position;
+        gridLeftCornerPos = GameObject.FindGameObjectWithTag("fisrtCellLeftUpperCorner").transform.position;
 
         offsetConst = 0.3f;
         offsetX = 0;
@@ -50,6 +50,8 @@ public class SuduckuGrid : MonoBehaviour
 
     void CreateGrid()
     {
+        Debug.Log(gridLeftCornerPos);
+        Vector3 leftUpperCorner = gridLeftCornerPos + Vector3.left * cellRadius + Vector3.up * cellRadius;
         for (int y = 0; y < 9; y++)
         {
             for (int x = 0; x < 9; x++)
@@ -65,9 +67,8 @@ public class SuduckuGrid : MonoBehaviour
                     offsetY += 0.7f;
                 }
 
-                Vector3 curCellPos = gridLeftUpperCorner + (x * cellDiameter + cellRadius + offsetX) * Vector3.right
-                                                         + (y * cellDiameter + cellRadius + offsetY) * Vector3.down
-                                                         + (-1 * Vector3.forward);
+                Vector3 curCellPos = leftUpperCorner + (x * cellDiameter + cellRadius + offsetX) * Vector3.right
+                                                         + (y * cellDiameter + cellRadius + offsetY) * Vector3.down;
 
                 if (x == 0 && y == 0)
                     firstX = curCellPos.x;

@@ -50,6 +50,8 @@ public class Cell : MonoBehaviour
 
         notChangableNumber = new Color(0.4056604f, 0.2034299f, 0.0478373f);
         changableNumber = new Color(0, 0, 0);
+
+        textNumber.GetComponent<Text>().font.material.mainTexture.filterMode = FilterMode.Point;
     }
 
     public Cell(int _gridPosX, int _gridPosY, Vector2 _worldPos)
