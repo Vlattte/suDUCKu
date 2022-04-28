@@ -25,15 +25,14 @@ public class SudokuSolver
                               0,2,0,  6,1,0,  5,9,4};*/
 
         //Вывод судоку на экран
-        Debug.Log("Судоку");
-        Writeln(sudoku, false);
+       // Writeln(sudoku, false);
         if (CheckSudoku(sudoku)) //Условие проверяет в методе правильность судоку
         {
             //Если судоку правильное, то ищется решение
             if (Solver(index, ref sudoku))  //Условие проверяет есть ли решение,                                                 
             {                               //если есть, метод возвращает true и по ref ссылке первое найденное решение
                 Debug.Log("Первое найденное решение Судоку");
-                Writeln(sudoku, false);
+                //Writeln(sudoku, false);
             }
             else Debug.Log("Нет решений");
 
@@ -55,6 +54,7 @@ public class SudokuSolver
             if (9 < sudoku[index] || sudoku[index] < 0) //Проверка значений ячеек в диапазоне 1 до 9
                 return false;
 
+            Debug.Log("1");
             if (sudoku[index] != 0)                     //Проверяем на совпадение только ненулевые ячейки
             {
                 //проверяем ячейку на совпадение значения с другими ячейками в строке, столбце, сегменте
@@ -100,6 +100,7 @@ public class SudokuSolver
     //в метод поступает: проверяемое значение, индекс ячейки, где проверяется это значение, и массив судоку
     static bool CheckPossibleValue(int value, int index, int[] sudoku)
     {
+        Debug.Log("Чекаю, бро");
         //проверяем по строке и столбцу
         for (int j = 0; j < 9; j++)
         {

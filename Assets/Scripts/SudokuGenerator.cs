@@ -6,23 +6,30 @@ using UnityEngine.UI;
 public class SudokuGenerator : MonoBehaviour
 {
     public List<GameObject> SuduckuTable;
+    public SuduckuGrid gridManager;
     private bool isGenerated;
     private Cell[,] cells;
+    private int[,] cellNumbers;
+    private int[] cellNumbersForSolver;
 
     private void Update()
     {
-        if (SuduckuTable != null && !isGenerated)
+        if (!isGenerated)
         {
             isGenerated = true;
             GenerateBaseTable();
             RandomMixing();
 
-            SudokuSolver.Writeln(CellsToNumbers(), true);
+            //SudokuSolver.Writeln(NumbersToCells(), true);
             ErraisingNumbers(47);
+            NumbersToCells();
 
-            isGenerated = SudokuSolver.MainFunction(CellsToNumbers());
+            isGenerated = SudokuSolver.MainFunction(cellNumbersForSolver);
             if (!isGenerated)
+            {
+                Debug.Log("BAD SUDOKU");
                 GenerateAgain();
+            }
         }
     }
 
@@ -36,12 +43,25 @@ public class SudokuGenerator : MonoBehaviour
 
     void Start()
     {
-        cells = new Cell[9,9];
+        gridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
+        cellNumbers = new int[9,9];
+        cellNumbersForSolver = new int[81];
+
         isGenerated = false;
+    }
+
+    void FillCellsAfterMixing()
+    {
+        SuduckuTable = gridManager.suduckuTable;
+        //добавить Empty, если ноль
+        for (int x = 0; x < 9; x++)
+            for (int y = 0; y < 9; y++)
+                SuduckuTable[x * 9 + y].GetComponent<Cell>().SetNumberUI(cellNumbers[x, y]);
     }
 
     void GenerateBaseTable()
     {
+        Debug.Log("BASE TABLE");
         int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         int k = -1;
 
@@ -51,9 +71,10 @@ public class SudokuGenerator : MonoBehaviour
                 k++; 
             for (int j = 0; j < 9; j++)
             {
-                Cell cellRef = SuduckuTable[i*9+j].GetComponent<Cell>();
-                cells[j, i] = cellRef;
-                cellRef.SetNumber(nums[(j + (i*3) + k)%9]);
+                //Cell cellRef = SuduckuTable[i*9+j].GetComponent<Cell>();
+                //cells[j, i] = cellRef;
+                //cellRef.RememberNumber(nums[(j + (i*3) + k)%9]);
+                cellNumbers[i, j] = nums[(j + (i * 3) + k) % 9];
             }
         }
     }
@@ -85,7 +106,7 @@ public class SudokuGenerator : MonoBehaviour
                     SwapColSectors();
                     break;
             }
-        }   
+        }
     }
 
     void ErraisingNumbers(int difficulty)
@@ -94,12 +115,13 @@ public class SudokuGenerator : MonoBehaviour
         {
             int x = Random.Range(0, 9);
             int y = Random.Range(0, 9);
-            if (cells[x, y].isEmpty)
+            if (SuduckuTable[x * 9 + y].GetComponent<Cell>().isEmpty)
                 continue;
 
-            cells[x, y].SetNumber(0);
+            cellNumbers[x, y] = 0;
             difficulty--;
         }
+        FillCellsAfterMixing();
     }
 
     void Transposing()
@@ -112,10 +134,9 @@ public class SudokuGenerator : MonoBehaviour
                 if (i == k)
                     continue;
 
-
-                temp = cells[i, k].GetMainValue;
-                cells[i, k].SetNumber(cells[k, i].GetMainValue);
-                cells[k, i].SetNumber(temp);
+                temp = cellNumbers[i, k];
+                cellNumbers[i, k] = cellNumbers[k, i];
+                cellNumbers[k, i] = temp;
             }
         }
     }
@@ -145,9 +166,9 @@ public class SudokuGenerator : MonoBehaviour
         int buf;
         for (int cur_col = 0; cur_col < 9; cur_col++)
         {
-            buf = cells[cur_col, row1].GetMainValue;
-            cells[cur_col, row1].SetNumber(cells[cur_col, row2].GetMainValue);
-            cells[cur_col, row2].SetNumber(buf);
+            buf = cellNumbers[cur_col, row1];
+            cellNumbers[cur_col, row1] = cellNumbers[cur_col, row2];
+            cellNumbers[cur_col, row2] = buf;
         }
     }
 
@@ -175,9 +196,9 @@ public class SudokuGenerator : MonoBehaviour
         int buf;
         for (int cur_row = 0; cur_row < 9; cur_row++)
         {
-            buf = cells[col1, cur_row].GetMainValue;
-            cells[col1, cur_row].SetNumber(cells[col2, cur_row].GetMainValue);
-            cells[col2, cur_row].SetNumber(buf);
+            buf = cellNumbers[col1, cur_row];
+            cellNumbers[col1, cur_row] = cellNumbers[col2, cur_row];
+            cellNumbers[col2, cur_row] = buf;
         }
     }
 
@@ -219,19 +240,16 @@ public class SudokuGenerator : MonoBehaviour
         }
     }
 
-    int[] CellsToNumbers()
+    void NumbersToCells()
     {
-        int[] cell_numbers = new int[81];
-        int i = 0;
         for (int x = 0; x < 9; x++)
         {
             for (int y = 0; y < 9; y++)
             {
-                cell_numbers[i] = cells[y, x].GetMainValue;
-                i++;
+                //SuduckuTable[x * 9 + y].GetComponent<Cell>().SetNumberUI(cellNumbers[x, y]);
+                cellNumbersForSolver[x * 9 + y] = cellNumbers[x, y];
             }
         }
-        return cell_numbers;
     }
 
     //////////////////////////

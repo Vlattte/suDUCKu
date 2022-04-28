@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ButtonCell : MonoBehaviour
 {
-    private int buttonValue;
+    [Range(1,9)]
+    public int buttonValue;
     private SuduckuGrid GridManager;
-    public Text textNumber;
+    public TextMeshProUGUI textNumber;
     public Image image;
 
     //sprites of numbers to show
@@ -31,9 +33,9 @@ public class ButtonCell : MonoBehaviour
         set 
         { 
             buttonValue = value;
-            textNumber.gameObject.SetActive(false);
+            /*textNumber.gameObject.SetActive(false);
             image.gameObject.SetActive(true);
-            image.sprite = imageNumbersArray[value - 1];
+            image.sprite = imageNumbersArray[value - 1];*/
         }
     }
 

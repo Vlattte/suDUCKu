@@ -18,6 +18,7 @@ public class SuduckuGrid : MonoBehaviour
     public List<GameObject> buttons;        //buttons, which enter numbers in cells
     public GameObject cellPrefab;
     public SudokuGenerator generator;
+    public HeartConroller lives;
    
     public bool isGenerated;                // bool for EnterCells to begin spawning buttons
     public bool isEnterBigNumbers;
@@ -31,7 +32,7 @@ public class SuduckuGrid : MonoBehaviour
         activeCellX = -1;
         activeCellY = -1;
 
-        isGenerated = false;
+        //isGenerated = false;
         isEnterBigNumbers = true;
         cellDiameter = cellRadius * 2;
 
@@ -41,22 +42,31 @@ public class SuduckuGrid : MonoBehaviour
         offsetX = 0;
         offsetY = 0;
 
-        suduckuTable = new List<GameObject>();
+        //suduckuTable = new List<GameObject>();
         grid = new Cell[9, 9];
 
-        CreateGrid();
-        isGenerated = true;
+        SetIndexes();
     }
 
+    void SetIndexes()
+    {
+        for (int y = 0; y < 9; y++)
+        {
+            for (int x = 0; x < 9; x++)
+            {
+                Cell cellRef = cellPrefab.GetComponent<Cell>();
+                suduckuTable[x + 9 * y].GetComponent<Cell>().SetGridPos(x, y);
+            }
+        }
+    }
     void CreateGrid()
     {
-        Debug.Log(gridLeftCornerPos);
         Vector3 leftUpperCorner = gridLeftCornerPos + Vector3.left * cellRadius + Vector3.up * cellRadius;
         for (int y = 0; y < 9; y++)
         {
             for (int x = 0; x < 9; x++)
             {
-                if (x % 3 == 0 && x != 0)
+                /*if (x % 3 == 0 && x != 0)
                 {
                     offsetX += 0.7f;
                     Debug.Log(offsetX);
@@ -73,31 +83,26 @@ public class SuduckuGrid : MonoBehaviour
                 if (x == 0 && y == 0)
                     firstX = curCellPos.x;
                 if (x == 8 && y == 8)
-                    lastY = curCellPos.y;
-         
+                    lastY = curCellPos.y;*/
+
                 //remember this cell in the list
                 //make it child of an object
-                var newCell = Instantiate(cellPrefab, new Vector3(curCellPos.x, curCellPos.y), Quaternion.identity);
-                Cell cellRef = newCell.GetComponent<Cell>();
-                cellRef.SetGridPos(x, y);
-                cellRef.ManageWorldPos = curCellPos;
+                /*var newCell = Instantiate(cellPrefab, new Vector3(curCellPos.x, curCellPos.y), Quaternion.identity);
+                Cell cellRef = newCell.GetComponent<Cell>();*/
+                Cell cellRef = cellPrefab.GetComponent<Cell>();
+                suduckuTable[x + 9*y].GetComponent<Cell>().SetGridPos(x, y);
+                //cellRef.ManageWorldPos = curCellPos;
 
-                newCell.transform.SetParent(this.transform);
-                suduckuTable.Add(newCell as GameObject);
+                //newCell.transform.SetParent(this.transform);
+               // suduckuTable.Add(newCell as GameObject);
             }
-            offsetX = 0;
         }
-        generator.SuduckuTable = suduckuTable;
+        //generator.SuduckuTable = suduckuTable;
     }
 
-    public int ManageMistakesCount
+    public void ManageMistakesCount()
     {
-        set 
-        { 
-            countMistakes++; 
-            if(countMistakes >=3)
-                Application.Quit();
-        }
+        lives.decreaseLives();
     }
 
     public void SetActiveCell(int x, int y)

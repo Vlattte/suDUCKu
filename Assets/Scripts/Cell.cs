@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public class Cell : MonoBehaviour
@@ -20,9 +21,10 @@ public class Cell : MonoBehaviour
     private int gridPosY;
 
     //UI
-    public Text textNumber;
+    public TextMeshProUGUI textNumber;
     public Image backImage;
     public bool isEmpty;
+    private int isAnyNotes;
 
     //Grid
     private SuduckuGrid GridManager;
@@ -48,10 +50,10 @@ public class Cell : MonoBehaviour
         activeColor = new Color(0.6556604f, 0.896965f, 1);
         mistakeColor = new Color(0.5960785f, 0, 0);
 
-        notChangableNumber = new Color(0.4056604f, 0.2034299f, 0.0478373f);
+        notChangableNumber = new Color(99/255f, 99 / 255f, 99 / 255f);
         changableNumber = new Color(0, 0, 0);
 
-        textNumber.GetComponent<Text>().font.material.mainTexture.filterMode = FilterMode.Point;
+        isAnyNotes = 0;
     }
 
     public Cell(int _gridPosX, int _gridPosY, Vector2 _worldPos)
@@ -89,7 +91,12 @@ public class Cell : MonoBehaviour
         set { worldPos = value; }
     }
 
-    public void SetNumber(int number)
+    public void RememberNumber(int number)
+    {
+        mainValue = number;
+    }
+
+    public void SetNumberUI(int number)
     {
         
         if (number == 0)
@@ -126,7 +133,10 @@ public class Cell : MonoBehaviour
             {
                 userValue = number;
                 if (userValue != mainValue)
+                {
                     textNumber.color = mistakeColor;
+                    GridManager.ManageMistakesCount();
+                }
                 else if (textNumber.color == mistakeColor && userValue == mainValue)
                     textNumber.color = changableNumber;
 
@@ -137,22 +147,27 @@ public class Cell : MonoBehaviour
 
     public void SetLittleNumber(int number)
     {
-        if (userValue != 0)
+        if (isEmpty)
         {
-            ClearCell();
-        }
+            if (userValue != 0)
+            {
+                ClearCell();
+            }
 
-        Color temp_color = hintValues[number - 1].GetComponent<Image>().color;
-        if (hintValuesInCell[number] == true)
-        {
-            hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 0f);
+            Color temp_color = hintValues[number - 1].GetComponent<Image>().color;
+            if (hintValuesInCell[number] == true)
+            {
+                hintValuesInCell[number] = false;
+                hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 0f);
+                isAnyNotes--;
+            }
+            else
+            {
+                hintValuesInCell[number] = true;
+                hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 1f);
+                isAnyNotes++;
+            }
         }
-        else
-        {
-            hintValuesInCell[number] = true;
-            hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 1f);
-        }
-
     }
 
     private void OnMouseDown()
@@ -174,12 +189,9 @@ public class Cell : MonoBehaviour
         {
             //if GetEnterModeStatus == true
             //big numbers
-            if (GridManager.GetEnterModeStatus)
-            {
-                textNumber.text = " ";
-                backImage.color = activeColor;
-            }
-            else
+            textNumber.text = " ";
+            backImage.color = activeColor;
+            if (isAnyNotes > 0)
             {
                 foreach (GameObject note in hintValues)
                 {
