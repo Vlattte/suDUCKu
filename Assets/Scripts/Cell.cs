@@ -8,7 +8,7 @@ using TMPro;
 public class Cell : MonoBehaviour
 {
     //values
-    private int mainValue;
+    public  int mainValue;
     private int userValue;
     private bool[] hintValuesInCell; //first element to check existence of any numbers
     public GameObject[] hintValues;
@@ -101,6 +101,13 @@ public class Cell : MonoBehaviour
         
         if (number == 0)
         {
+            isEmpty = true;
+            textNumber.text = " ";
+            textNumber.color = changableNumber;
+        }
+        else if (number < 0)
+        {
+            mainValue = -1 * number;
             isEmpty = true;
             textNumber.text = " ";
             textNumber.color = changableNumber;
