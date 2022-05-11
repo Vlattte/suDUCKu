@@ -12,6 +12,7 @@ public class Cell : MonoBehaviour
     private int userValue;
     private bool[] hintValuesInCell; //first element to check existence of any numbers
     public GameObject[] hintValues;
+    public NotesController notesController;
 
     public Sprite[] imageNumber;
 
@@ -161,17 +162,19 @@ public class Cell : MonoBehaviour
                 ClearCell();
             }
 
-            Color temp_color = hintValues[number - 1].GetComponent<Image>().color;
+            //Color temp_color = hintValues[number - 1].GetComponent<Image>().color;
             if (hintValuesInCell[number] == true)
             {
                 hintValuesInCell[number] = false;
-                hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 0f);
+                //hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 0f);
+                notesController.SetNoteActive(true, number);
                 isAnyNotes--;
             }
             else
             {
                 hintValuesInCell[number] = true;
-                hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 1f);
+                //hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 1f);
+                notesController.SetNoteActive(false, number);
                 isAnyNotes++;
             }
         }

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class NoteButton : MonoBehaviour
 {
     private SuduckuGrid GridManager;
+    public GameObject pencilObj;
     private bool isLittleNums;
 
 
@@ -21,12 +22,12 @@ public class NoteButton : MonoBehaviour
         if (!isLittleNums)
         {
             isLittleNums = true;   
-            gameObject.transform.localScale /= 2;
+            pencilObj.transform.localScale /= 2;
         }
         else if (isLittleNums)
         {
             isLittleNums = false;
-            gameObject.transform.localScale *= 2;
+            pencilObj.transform.localScale *= 2;
         }
     }
 }

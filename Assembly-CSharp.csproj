@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\NoteButton.cs" />
     <Compile Include="Assets\Scripts\Cell.cs" />
+    <Compile Include="Assets\Scripts\NotesController.cs" />
     <Compile Include="Assets\Scripts\GenerateButtonCells.cs" />
     <Compile Include="Assets\Scripts\SudokuGenerator.cs" />
     <Compile Include="Assets\Scripts\ButtonCell.cs" />
@@ -66,6 +67,8 @@
     <Compile Include="Assets\Scripts\SuduckuGrid.cs" />
     <Compile Include="Assets\Scripts\SudokuSolver.cs" />
     <Compile Include="Assets\Scripts\HeartConroller.cs" />
+    <Compile Include="Assets\Scripts\NoteComponentActivator.cs" />
+    <Compile Include="Assets\Scripts\NoteComponentReturner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
