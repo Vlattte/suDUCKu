@@ -10,9 +10,8 @@ public class Cell : MonoBehaviour
     //values
     public  int mainValue;
     private int userValue;
-    private bool[] hintValuesInCell; //first element to check existence of any numbers
-    public GameObject[] hintValues;
-    public NotesController notesController;
+    private bool[] hintValuesInCell;        //first element to check existence of any numbers        
+    public NotesController notesController; //set number in note cells
 
     public Sprite[] imageNumber;
 
@@ -43,8 +42,8 @@ public class Cell : MonoBehaviour
     {
         GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
 
-        hintValuesInCell = new bool[10];
-        for (int i = 0; i < 10; i++)
+        hintValuesInCell = new bool[9];
+        for (int i = 0; i < 9; i++)
             hintValuesInCell[i] = false;
 
         notActiveColor = Color.white;
@@ -97,6 +96,8 @@ public class Cell : MonoBehaviour
         mainValue = number;
     }
 
+    //-number to empty cell and mainvalue = number
+    //number to change main number to number
     public void SetNumberUI(int number)
     {
         
@@ -108,6 +109,7 @@ public class Cell : MonoBehaviour
         }
         else if (number < 0)
         {
+            //method is used for Empty cell, when sudocku is creating
             mainValue = -1 * number;
             isEmpty = true;
             textNumber.text = " ";
@@ -115,6 +117,12 @@ public class Cell : MonoBehaviour
         }
         else
         {
+            if (isAnyNotes > 0)
+            {
+                ClearCell();
+                isAnyNotes = 0;
+            }
+
             mainValue = number;
             isEmpty = false;
             textNumber.text = mainValue.ToString();
@@ -131,6 +139,7 @@ public class Cell : MonoBehaviour
         }
     }
 
+    //number range [1, 9]
     public void SetUserNumber(int number)
     {
         if (isEmpty)
@@ -139,7 +148,15 @@ public class Cell : MonoBehaviour
                 ClearCell();
             else 
             {
+                //if there is any user notes, 
+                //clear them and write number
+                if (isAnyNotes > 0)
+                    ClearCell();
+
                 userValue = number;
+                
+                //if number isn't right increase mistakes
+                //and set mistake color
                 if (userValue != mainValue)
                 {
                     textNumber.color = mistakeColor;
@@ -153,6 +170,7 @@ public class Cell : MonoBehaviour
         }
     }
 
+    //number range [1, 9]
     public void SetLittleNumber(int number)
     {
         if (isEmpty)
@@ -163,18 +181,18 @@ public class Cell : MonoBehaviour
             }
 
             //Color temp_color = hintValues[number - 1].GetComponent<Image>().color;
-            if (hintValuesInCell[number] == true)
+            if (hintValuesInCell[number-1] == true)
             {
-                hintValuesInCell[number] = false;
+                hintValuesInCell[number-1] = false;
                 //hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 0f);
-                notesController.SetNoteActive(true, number);
+                notesController.SetNoteActive(false, number);
                 isAnyNotes--;
             }
             else
             {
-                hintValuesInCell[number] = true;
+                hintValuesInCell[number-1] = true;
                 //hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 1f);
-                notesController.SetNoteActive(false, number);
+                notesController.SetNoteActive(true, number);
                 isAnyNotes++;
             }
         }
@@ -203,10 +221,12 @@ public class Cell : MonoBehaviour
             backImage.color = activeColor;
             if (isAnyNotes > 0)
             {
-                foreach (GameObject note in hintValues)
+                for (int i = 0; i < 9; i++)
                 {
-                    note.SetActive(false);
+                    notesController.SetNoteActive(false, i+1);
+                    hintValuesInCell[i] = false;
                 }
+                isAnyNotes = 0;
             }
             userValue = 0;
         }

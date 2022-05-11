@@ -6,15 +6,8 @@ public class SuduckuGrid : MonoBehaviour
 {
     //cell positions
     public float gridSizeX, gridSizeY;
-    public float cellRadius;
-    private float cellDiameter;
-    public float firstX, lastY;
-    private float offsetX, offsetY;
-    private float offsetConst;
-    private Vector3 gridLeftCornerPos;
 
     public List<GameObject> suduckuTable;
-    private Cell[,] grid;
     public List<GameObject> buttons;        //buttons, which enter numbers in cells
     public GameObject cellPrefab;
     public SudokuGenerator generator;
@@ -34,17 +27,6 @@ public class SuduckuGrid : MonoBehaviour
 
         //isGenerated = false;
         isEnterBigNumbers = true;
-        cellDiameter = cellRadius * 2;
-
-        gridLeftCornerPos = GameObject.FindGameObjectWithTag("fisrtCellLeftUpperCorner").transform.position;
-
-        offsetConst = 0.3f;
-        offsetX = 0;
-        offsetY = 0;
-
-        //suduckuTable = new List<GameObject>();
-        grid = new Cell[9, 9];
-
         SetIndexes();
     }
 
@@ -59,14 +41,16 @@ public class SuduckuGrid : MonoBehaviour
             }
         }
     }
-    void CreateGrid()
+
+
+    /*void CreateGrid()
     {
         Vector3 leftUpperCorner = gridLeftCornerPos + Vector3.left * cellRadius + Vector3.up * cellRadius;
         for (int y = 0; y < 9; y++)
         {
             for (int x = 0; x < 9; x++)
             {
-                /*if (x % 3 == 0 && x != 0)
+                *//*if (x % 3 == 0 && x != 0)
                 {
                     offsetX += 0.7f;
                     Debug.Log(offsetX);
@@ -83,12 +67,12 @@ public class SuduckuGrid : MonoBehaviour
                 if (x == 0 && y == 0)
                     firstX = curCellPos.x;
                 if (x == 8 && y == 8)
-                    lastY = curCellPos.y;*/
+                    lastY = curCellPos.y;*//*
 
                 //remember this cell in the list
                 //make it child of an object
-                /*var newCell = Instantiate(cellPrefab, new Vector3(curCellPos.x, curCellPos.y), Quaternion.identity);
-                Cell cellRef = newCell.GetComponent<Cell>();*/
+                *//*var newCell = Instantiate(cellPrefab, new Vector3(curCellPos.x, curCellPos.y), Quaternion.identity);
+                Cell cellRef = newCell.GetComponent<Cell>();*//*
                 Cell cellRef = cellPrefab.GetComponent<Cell>();
                 suduckuTable[x + 9*y].GetComponent<Cell>().SetGridPos(x, y);
                 //cellRef.ManageWorldPos = curCellPos;
@@ -98,7 +82,7 @@ public class SuduckuGrid : MonoBehaviour
             }
         }
         //generator.SuduckuTable = suduckuTable;
-    }
+    }*/
 
     public void ManageMistakesCount()
     {
