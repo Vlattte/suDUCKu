@@ -460,8 +460,6 @@ MonoBehaviour:
   gridSizeX: 100
   gridSizeY: 100
   cellRadius: 5.63
-  firstX: 0
-  lastY: 0
   suduckuTable:
   - {fileID: 2789563627243207344}
   - {fileID: 2789563627411655480}
@@ -33051,6 +33049,10 @@ PrefabInstance:
     - target: {fileID: 3993498846338875162, guid: 2275217351fb212409bb6a8677938b2f, type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3993498846338875162, guid: 2275217351fb212409bb6a8677938b2f, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3993498846338875162, guid: 2275217351fb212409bb6a8677938b2f, type: 3}
       propertyPath: m_AnchorMax.x

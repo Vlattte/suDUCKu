@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GenerateButtonCells : MonoBehaviour
 {
-    private float xPos, yPos;
+    /*private float xPos, yPos;
     private Vector3 firstButtonCellPos;
 
     public GameObject gridParent;
@@ -42,23 +42,23 @@ public class GenerateButtonCells : MonoBehaviour
         {
             Vector2 curCellPos = new Vector2(xPos + i * grid.cellRadius * 2 + grid.cellRadius, yPos);
 
-            /*var newCell = Instantiate(cellButtonPrefab, curCellPos, Quaternion.identity);
+            *//*var newCell = Instantiate(cellButtonPrefab, curCellPos, Quaternion.identity);
             ButtonCell cellRef = newCell.GetComponent<ButtonCell>();
 
-            buttons.Add(newCell as GameObject);*/
+            buttons.Add(newCell as GameObject);*//*
 
             ButtonCell cellRef = cellButtonPrefab.GetComponent<ButtonCell>();
             cellRef.SetButtonValue = i+1;
 
             //newCell.transform.SetParent(this.transform);
         }
-        /*
+        *//*
         //create clear button
         var clearCell = Instantiate(cellClearerPrefab, new Vector2(xPos + grid.cellRadius, yPos - 2*grid.cellRadius), Quaternion.identity);
         clearCell.transform.SetParent(this.transform);
 
         //create note button
         var noteBtnCell = Instantiate(noteBtnCellPrefab, new Vector2(xPos + 3*grid.cellRadius, yPos - 2 * grid.cellRadius), Quaternion.identity);
-        noteBtnCell.transform.SetParent(this.transform);*/
-    }
+        noteBtnCell.transform.SetParent(this.transform);*//*
+    }*/
 }

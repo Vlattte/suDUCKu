@@ -5,22 +5,28 @@ using UnityEngine;
 public class SuduckuGrid : MonoBehaviour
 {
     //cell positions
-    public float gridSizeX, gridSizeY;
+    public float gridSizeX, gridSizeY;      // cell position in grid format: [x, y]
+    public float cellRadius;
 
-    public List<GameObject> suduckuTable;
-    public List<GameObject> buttons;        //buttons, which enter numbers in cells
-    public GameObject cellPrefab;
-    public SudokuGenerator generator;
-    public HeartConroller lives;
+    public List<GameObject> suduckuTable;   // list of cells as game objects
+    public List<GameObject> buttons;        // buttons, which enter numbers in cells
+    public GameObject cellPrefab;           
+    public SudokuGenerator generator;       // sudoku numbers generator
+    public HeartConroller lives;            // lives manager
+
+    public GameObject WinPanelObj;          // Panel, that will apear after win
    
     public bool isGenerated;                // bool for EnterCells to begin spawning buttons
-    public bool isEnterBigNumbers;
+    public bool isEnterBigNumbers;          // enter mode: is user enter notes or big numbers in cell
 
-    private int countMistakes;
-    private int activeCellX, activeCellY;
+    public int countRightNumbers;           // count number of right filled cells, if equal to 81, game is won
+    private int activeCellX, activeCellY;   // position of hightlighted cell (suducku table positions: from 0 to 80)
 
     private void Start()
     {
+        //not filled cells
+        countRightNumbers = 81 - DataHolder.ManageDifficulty;
+
         //none of cells is highlited
         activeCellX = -1;
         activeCellY = -1;
@@ -84,11 +90,24 @@ public class SuduckuGrid : MonoBehaviour
         //generator.SuduckuTable = suduckuTable;
     }*/
 
+    //Count number of right cells
+    public void ChangeRightNumberCount(int _isNumberRight)
+    {
+        countRightNumbers += _isNumberRight;
+        if (countRightNumbers == 81)
+        {
+            WinPanelObj.SetActive(true);
+            return;
+        }
+    }
+
+    //Increase mistakes and change one heart to gray
     public void ManageMistakesCount()
     {
         lives.decreaseLives();
     }
 
+    //Highlight cell
     public void SetActiveCell(int x, int y)
     {
         if (activeCellX != -1)
@@ -110,11 +129,13 @@ public class SuduckuGrid : MonoBehaviour
         }
     }
 
+    //Set notes or final number
     public void ChangeEnterMode()
     {
         isEnterBigNumbers = !isEnterBigNumbers;
     }
 
+    //Get enter mode
     public bool GetEnterModeStatus
     {
         get { return isEnterBigNumbers; }
@@ -125,10 +146,12 @@ public class SuduckuGrid : MonoBehaviour
     {
         if(activeCellX != -1)
         {
-            suduckuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetUserNumber(value);
+            int isRightNumber = suduckuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetUserNumber(value);
+            ChangeRightNumberCount(isRightNumber);
         }
     }
 
+    //Set note = value
     public void SetLittleNumberInCell(int value)
     {
         if (activeCellX != -1 && activeCellY != -1)
@@ -137,6 +160,7 @@ public class SuduckuGrid : MonoBehaviour
         }
     }
 
+    //Set cell empty
     public void ClearCell()
     {
         suduckuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().ClearCell();

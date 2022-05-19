@@ -13,6 +13,8 @@ public class SudokuGenerator : MonoBehaviour
     private bool[,] isCellEmpty;
     private int[] cellNumbersForSolver;
 
+    private int difficulty;
+
     private void Update()
     {
         if (!isGenerated)
@@ -22,13 +24,12 @@ public class SudokuGenerator : MonoBehaviour
             RandomMixing();
 
             //SudokuSolver.Writeln(NumbersToCells(), true);
-            ErraisingNumbers(47);
+            ErraisingNumbers();
             NumbersToCells();
 
             isGenerated = SudokuSolver.MainFunction(cellNumbersForSolver);
             if (!isGenerated)
             {
-                Debug.Log("BAD SUDOKU");
                 GenerateAgain();
             }
         }
@@ -38,12 +39,14 @@ public class SudokuGenerator : MonoBehaviour
     //generate again
     public void GenerateAgain()
     {
-        SuduckuTable.RemoveRange(0, SuduckuTable.Count);
         isGenerated = false;
     }
 
     void Start()
     {
+        //Set difficulty that user chose
+        difficulty = DataHolder.ManageDifficulty;
+
         gridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
         cellNumbers = new int[9, 9];
         isCellEmpty = new bool[9, 9];
@@ -114,7 +117,7 @@ public class SudokuGenerator : MonoBehaviour
         }
     }
 
-    void ErraisingNumbers(int difficulty)
+    void ErraisingNumbers()
     {
         while (difficulty > 0)
         {

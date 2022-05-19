@@ -140,12 +140,18 @@ public class Cell : MonoBehaviour
     }
 
     //number range [1, 9]
-    public void SetUserNumber(int number)
+    //returns 1  if number == mainvalue
+    //returns -1 if number != mainvalue
+    //returns 0  if number == 0 or number == userValue
+    public int SetUserNumber(int number)
     {
         if (isEmpty)
         {
             if (userValue == number)
+            {
                 ClearCell();
+                return 0;
+            }
             else 
             {
                 //if there is any user notes, 
@@ -154,20 +160,26 @@ public class Cell : MonoBehaviour
                     ClearCell();
 
                 userValue = number;
-                
+
                 //if number isn't right increase mistakes
                 //and set mistake color
                 if (userValue != mainValue)
                 {
                     textNumber.color = mistakeColor;
                     GridManager.ManageMistakesCount();
+                    textNumber.text = userValue.ToString();
+                    return -1;
                 }
+                //if there was a mistake => change color and set number
                 else if (textNumber.color == mistakeColor && userValue == mainValue)
+                {
                     textNumber.color = changableNumber;
-
+                }
                 textNumber.text = userValue.ToString();
+                return 1;
             } 
         }
+        return 0;
     }
 
     //number range [1, 9]
