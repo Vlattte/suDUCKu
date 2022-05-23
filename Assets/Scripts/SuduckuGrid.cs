@@ -48,48 +48,6 @@ public class SuduckuGrid : MonoBehaviour
         }
     }
 
-
-    /*void CreateGrid()
-    {
-        Vector3 leftUpperCorner = gridLeftCornerPos + Vector3.left * cellRadius + Vector3.up * cellRadius;
-        for (int y = 0; y < 9; y++)
-        {
-            for (int x = 0; x < 9; x++)
-            {
-                *//*if (x % 3 == 0 && x != 0)
-                {
-                    offsetX += 0.7f;
-                    Debug.Log(offsetX);
-                }
-
-                if (y % 3 == 0 && x == 0 && y!=0)
-                {
-                    offsetY += 0.7f;
-                }
-
-                Vector3 curCellPos = leftUpperCorner + (x * cellDiameter + cellRadius + offsetX) * Vector3.right
-                                                         + (y * cellDiameter + cellRadius + offsetY) * Vector3.down;
-
-                if (x == 0 && y == 0)
-                    firstX = curCellPos.x;
-                if (x == 8 && y == 8)
-                    lastY = curCellPos.y;*//*
-
-                //remember this cell in the list
-                //make it child of an object
-                *//*var newCell = Instantiate(cellPrefab, new Vector3(curCellPos.x, curCellPos.y), Quaternion.identity);
-                Cell cellRef = newCell.GetComponent<Cell>();*//*
-                Cell cellRef = cellPrefab.GetComponent<Cell>();
-                suduckuTable[x + 9*y].GetComponent<Cell>().SetGridPos(x, y);
-                //cellRef.ManageWorldPos = curCellPos;
-
-                //newCell.transform.SetParent(this.transform);
-               // suduckuTable.Add(newCell as GameObject);
-            }
-        }
-        //generator.SuduckuTable = suduckuTable;
-    }*/
-
     //Count number of right cells
     public void ChangeRightNumberCount(int _isNumberRight)
     {

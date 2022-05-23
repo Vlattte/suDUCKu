@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class HeartConroller : MonoBehaviour
 {
-    private int lives;      //possible mistakes before game over
+    private int lives;                  //possible mistakes before game over
     public List<GameObject> hearts;
     public Sprite noHeartPrefab;
+
+    public GameObject LosePanelObj;     // Panel, that will apear after lose
 
     // Start is called before the first frame update
     void Start()
@@ -20,7 +22,7 @@ public class HeartConroller : MonoBehaviour
         if (lives <= 0)
         {
             hearts[lives].GetComponent<SpriteRenderer>().sprite = noHeartPrefab;
-            Application.Quit();
+            LosePanelObj.SetActive(false);
             return;
         }
         hearts[lives].GetComponent<SpriteRenderer>().sprite = noHeartPrefab;

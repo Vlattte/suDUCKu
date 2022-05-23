@@ -8,6 +8,7 @@ TagManager:
   - fisrtCellCenter
   - fisrtCellLeftUpperCorner
   - firstButtonCellPos
+  - SudokuGenerator
   layers:
   - Default
   - TransparentFX

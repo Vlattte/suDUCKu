@@ -11,11 +11,20 @@ public class MainMenuScript : MonoBehaviour
 		DataHolder.ManageDifficulty = _difficulty;
     }
 
-	// нопки дл€ главного меню
 	public void PlayPressed()
 	{
 		SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
 	}
+
+	public void LoadMainScene()
+    {
+		SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
+
+	public void RestartGame()
+    {
+		GameObject.FindGameObjectWithTag("SudokuGenerator").GetComponent<SudokuGenerator>().GenerateAgain();
+    }
 
 	public void ExitPressed()
 	{
