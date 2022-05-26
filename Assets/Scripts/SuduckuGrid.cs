@@ -209,10 +209,11 @@ public class SuduckuGrid : MonoBehaviour
             Cell tempCell = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>();
             if (tempCell.isEmpty & tempCell.ManageUserValue == 0)
             {
+                //fill cell with main number of hint color
                 sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetHint();
                 ChangeRightNumberCount(1);
-                hintCount--;
-                if(hintCount <= 0)
+                hintCount--;                //decrease available hint count
+                if(hintCount <= 0)          //if there are no available hints
                     GameObject.FindGameObjectWithTag("HintButton").SetActive(false);
             }
                
