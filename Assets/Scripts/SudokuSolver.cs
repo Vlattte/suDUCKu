@@ -31,7 +31,7 @@ public class SudokuSolver
             //Если судоку правильное, то ищется решение
             if (Solver(index, ref sudoku))  //Условие проверяет есть ли решение,                                                 
             {                               //если есть, метод возвращает true и по ref ссылке первое найденное решение
-                Debug.Log("Первое найденное решение Судоку");
+                //Debug.Log("Первое найденное решение Судоку");
                 //Writeln(sudoku, false);
             }
             else Debug.Log("Нет решений");
@@ -99,7 +99,6 @@ public class SudokuSolver
     //в метод поступает: проверяемое значение, индекс ячейки, где проверяется это значение, и массив судоку
     static bool CheckPossibleValue(int value, int index, int[] sudoku)
     {
-        Debug.Log("Чекаю, бро");
         //проверяем по строке и столбцу
         for (int j = 0; j < 9; j++)
         {

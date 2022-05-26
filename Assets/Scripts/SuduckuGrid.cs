@@ -1,50 +1,109 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+
 
 
 public class SuduckuGrid : MonoBehaviour
 {
-    //cell positions
-    public float gridSizeX, gridSizeY;      // cell position in grid format: [x, y]
-    public float cellRadius;
-
-    public List<GameObject> suduckuTable;   // list of cells as game objects
-    public List<GameObject> buttons;        // buttons, which enter numbers in cells
-    public GameObject cellPrefab;           
-    public SudokuGenerator generator;       // sudoku numbers generator
+    [SerializeField] private List<GameObject> sudokuTable;   // list of cells as game objects
     public HeartConroller lives;            // lives manager
 
     public GameObject WinPanelObj;          // Panel, that will apear after win
-   
-    public bool isGenerated;                // bool for EnterCells to begin spawning buttons
-    public bool isEnterBigNumbers;          // enter mode: is user enter notes or big numbers in cell
 
-    public int countRightNumbers;           // count number of right filled cells, if equal to 81, game is won
+    private bool isEnterBigNumbers;          // enter mode: is user enter notes or big numbers in cell (false for notes)
+
+    private int countRightNumbers;           // count number of right filled cells, if equal to 81, game is won
+    private int hintCount;                  // number of available hints
     private int activeCellX, activeCellY;   // position of hightlighted cell (suducku table positions: from 0 to 80)
+
+
+    //save data
+    [SerializeField] private CellStruct[] cells;  //buffer of cells
+    [SerializeField] private string saveFilePath; //saved data path
+
+    private void Awake()
+    {
+        //saved data path
+        saveFilePath = Application.persistentDataPath + "/Save.dat";
+
+        //load save, if continue pressed
+        if (DataHolder.ManagePlayMode)
+        {
+            cells = SaveSudoku.LoadData<CellStruct[]>(saveFilePath);
+            CellsToSudokuTable();
+            //File.Delete(saveFilePath);
+        }
+    }
 
     private void Start()
     {
-        //not filled cells
-        countRightNumbers = 81 - DataHolder.ManageDifficulty;
+        //if continue mode
+        if(DataHolder.ManagePlayMode == true)
+        {
+            //number of not filled cells
+            countRightNumbers = PlayerPrefs.GetInt("countRightNumbers");
+            hintCount = PlayerPrefs.GetInt("hintCount");
+            for (int i = 0; i < 3 - PlayerPrefs.GetInt("mistakesCount"); i++)
+                lives.decreaseLives();
+        }
+        else
+        {
+            countRightNumbers = 81 - DataHolder.ManageDifficulty;
+            hintCount = 3;
 
-        //none of cells is highlited
+            //save data buffer
+            cells = new CellStruct[81];
+            SetIndexes();
+        }
+        PlayerPrefs.DeleteAll();
+
+        //if none of cells is highlited
         activeCellX = -1;
         activeCellY = -1;
 
+
         //isGenerated = false;
         isEnterBigNumbers = true;
-        SetIndexes();
     }
 
+    private void OnApplicationQuit()
+    {
+        SaveCurCells();
+    }
+
+    public void SaveCurCells()
+    {
+        PlayerPrefs.SetInt("countRightNumbers", countRightNumbers);
+        PlayerPrefs.SetInt("mistakesCount", lives.GetLives());
+        PlayerPrefs.SetInt("hintCount", hintCount);
+
+        for (int i = 0; i < 81; i++)
+        {
+            cells[i] = sudokuTable[i].GetComponent<Cell>().cellData;
+        }
+
+        if (cells != null)
+            SaveSudoku.SaveData(saveFilePath, cells);
+    }
+
+    //set grid positions of cells
     void SetIndexes()
     {
         for (int y = 0; y < 9; y++)
         {
             for (int x = 0; x < 9; x++)
             {
-                Cell cellRef = cellPrefab.GetComponent<Cell>();
-                suduckuTable[x + 9 * y].GetComponent<Cell>().SetGridPos(x, y);
+                sudokuTable[x + 9 * y].GetComponent<Cell>().SetGridPos(x, y);
             }
+        }
+    }
+
+    public void CellsToSudokuTable()
+    {
+        for(int i = 0; i < 81; i++)
+        {
+            sudokuTable[i].GetComponent<Cell>().ParseCellStruct(cells[i]);
         }
     }
 
@@ -72,8 +131,8 @@ public class SuduckuGrid : MonoBehaviour
         {
             for (int i = 0; i < 9; i++)
             {
-                suduckuTable[activeCellX + 9 * i].GetComponent<Cell>().SetCellActive(false);
-                suduckuTable[i + activeCellY * 9].GetComponent<Cell>().SetCellActive(false);
+                sudokuTable[activeCellX + 9 * i].GetComponent<Cell>().SetCellActive(false);
+                sudokuTable[i + activeCellY * 9].GetComponent<Cell>().SetCellActive(false);
             }
         }
 
@@ -82,8 +141,8 @@ public class SuduckuGrid : MonoBehaviour
         activeCellY = y;
         for (int i = 0; i < 9; i++)
         {
-            suduckuTable[activeCellX + 9 * i].GetComponent<Cell>().SetCellActive(true);
-            suduckuTable[i + activeCellY * 9].GetComponent<Cell>().SetCellActive(true);
+            sudokuTable[activeCellX + 9 * i].GetComponent<Cell>().SetCellActive(true);
+            sudokuTable[i + activeCellY * 9].GetComponent<Cell>().SetCellActive(true);
         }
     }
 
@@ -104,24 +163,66 @@ public class SuduckuGrid : MonoBehaviour
     {
         if(activeCellX != -1)
         {
-            int isRightNumber = suduckuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetUserNumber(value);
+            int isRightNumber = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetUserNumber(value);
             ChangeRightNumberCount(isRightNumber);
         }
     }
 
     //Set note = value
-    public void SetLittleNumberInCell(int value)
+    public void SetNoteInCell(int value)
     {
-        if (activeCellX != -1 && activeCellY != -1)
+        //if there is active cell, set note
+        if (activeCellX != -1)
         {
-            suduckuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetLittleNumber(value);
+            sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetLittleNumber(value);
+        }
+    }
+
+    //clear cells with flag isEmpty == true
+    public void RestartGame()
+    {
+        int idx = 0;
+        foreach (GameObject cell in sudokuTable)
+        {
+            if (cell.GetComponent<Cell>().isEmpty)
+            {
+                //clear notes and number in cell
+                cell.GetComponent<Cell>().ClearCellInRestart();
+
+                //reset cell buffer
+                cells[idx] = cell.GetComponent<Cell>().cellData;
+            }
+            idx++;
+        }
+
+        //reset lives
+        lives.increaseLives(3);
+        hintCount = 3;
+    }
+
+    //fill active cell with right number of hint color
+    //SetActive(false), if hint count is bigger than possible(to make hints unavailable)
+    public void MakeAHint()
+    {
+        if (activeCellX != -1)
+        {
+            Cell tempCell = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>();
+            if (tempCell.isEmpty & tempCell.ManageUserValue == 0)
+            {
+                sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetHint();
+                ChangeRightNumberCount(1);
+                hintCount--;
+                if(hintCount <= 0)
+                    GameObject.FindGameObjectWithTag("HintButton").SetActive(false);
+            }
+               
         }
     }
 
     //Set cell empty
     public void ClearCell()
     {
-        suduckuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().ClearCell();
+        sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().ClearCell();
     }
     ///////////////////////////////
 }

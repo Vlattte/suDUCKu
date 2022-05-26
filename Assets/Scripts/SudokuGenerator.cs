@@ -1,45 +1,58 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SudokuGenerator : MonoBehaviour
 {
-    public List<GameObject> SuduckuTable;
+    public List<GameObject> SudokuTable;
     public SuduckuGrid gridManager;
     private bool isGenerated;
 
     private int[,] cellNumbers;
-    private bool[,] isCellEmpty;
     private int[] cellNumbersForSolver;
 
     private int difficulty;
 
+
     private void Update()
     {
+        if(DataHolder.ManagePlayMode)
+        {
+            isGenerated = true;
+        }
+
         if (!isGenerated)
         {
             isGenerated = true;
             GenerateBaseTable();
             RandomMixing();
 
-            //SudokuSolver.Writeln(NumbersToCells(), true);
             ErraisingNumbers();
             NumbersToCells();
-
             isGenerated = SudokuSolver.MainFunction(cellNumbersForSolver);
             if (!isGenerated)
             {
-                GenerateAgain();
+                isGenerated = false;
             }
         }
     }
 
-    //if sudoku isn't solvable
-    //generate again
-    public void GenerateAgain()
+    public void NewGameGenerator()
     {
-        isGenerated = false;
+        gridManager.lives.increaseLives(3);
+        GenerateBaseTable();
+        RandomMixing();
+    }
+
+    public void EraisingWithNewDifficulty(int _difficulty)
+    {
+        difficulty = _difficulty;
+        ErraisingNumbers();
+        NumbersToCells();
+        isGenerated = SudokuSolver.MainFunction(cellNumbersForSolver);
+        if (!isGenerated)
+        {
+            isGenerated = false;
+        }
     }
 
     void Start()
@@ -49,11 +62,20 @@ public class SudokuGenerator : MonoBehaviour
 
         gridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
         cellNumbers = new int[9, 9];
-        isCellEmpty = new bool[9, 9];
         cellNumbersForSolver = new int[81];
-        SuduckuTable = gridManager.suduckuTable;
+        //SuduckuTable = gridManager.sudokuTable;
+
 
         isGenerated = false;
+    }
+
+    void FillCellsIncontinue()
+    {
+        for(int i = 0; i < 81; i++)
+        {
+            int _mainValue = SudokuTable[i].GetComponent<Cell>().GetMainValue;
+            SudokuTable[i].GetComponent<Cell>().SetNumberUI(_mainValue);
+        }
     }
 
     void FillCellsAfterMixing()
@@ -62,14 +84,13 @@ public class SudokuGenerator : MonoBehaviour
         {
             for (int y = 0; y < 9; y++)
             {
-                SuduckuTable[x * 9 + y].GetComponent<Cell>().SetNumberUI(cellNumbers[x, y]);
+                SudokuTable[x * 9 + y].GetComponent<Cell>().SetNumberUI(cellNumbers[x, y]);
             }
         }
     }
 
     void GenerateBaseTable()
     {
-        Debug.Log("BASE TABLE");
         int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         int k = -1;
 
@@ -252,13 +273,14 @@ public class SudokuGenerator : MonoBehaviour
         }
     }
 
+    //////////////////////////
+
     void NumbersToCells()
     {
         for (int x = 0; x < 9; x++)
         {
             for (int y = 0; y < 9; y++)
             {
-                //SuduckuTable[x * 9 + y].GetComponent<Cell>().SetNumberUI(cellNumbers[x, y]);
                 if(cellNumbers[x,y] < 0)
                     cellNumbersForSolver[x * 9 + y] = -cellNumbers[x, y];
                 else
@@ -267,5 +289,4 @@ public class SudokuGenerator : MonoBehaviour
         }
     }
 
-    //////////////////////////
 }

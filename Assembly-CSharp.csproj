@@ -57,12 +57,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\NoteButton.cs" />
+    <Compile Include="Assets\Scripts\SaveSudoku.cs" />
     <Compile Include="Assets\Scripts\NoteComponentActivator.cs" />
     <Compile Include="Assets\Scripts\Cell.cs" />
     <Compile Include="Assets\Scripts\NotesController.cs" />
     <Compile Include="Assets\Scripts\GenerateButtonCells.cs" />
     <Compile Include="Assets\Scripts\SudokuGenerator.cs" />
     <Compile Include="Assets\Scripts\RandomNumbers.cs" />
+    <Compile Include="Assets\Scripts\CellStruct.cs" />
     <Compile Include="Assets\Scripts\NoteComponentReturner.cs" />
     <Compile Include="Assets\Scripts\ButtonCell.cs" />
     <Compile Include="Assets\Scripts\MainMenuScript.cs" />

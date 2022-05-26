@@ -46,6 +46,6 @@ public class ButtonCell : MonoBehaviour
 
     public void SetLittleNumberInCell()
     {
-        GridManager.SetLittleNumberInCell(buttonValue);
+        GridManager.SetNoteInCell(buttonValue);
     }
 }

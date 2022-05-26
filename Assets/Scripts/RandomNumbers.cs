@@ -18,7 +18,7 @@ public class RandomNumbers: MonoBehaviour
     private void Start()
     {
         cellNumbers = new int[9, 9];
-        timer_for_next_generation = 0f;
+        timer_for_next_generation = 5f;
         SetIndexes();
         isGenerated = false;
     }
@@ -39,15 +39,14 @@ public class RandomNumbers: MonoBehaviour
         if (!isGenerated)
         {
             isGenerated = true;
-            GenerateBaseTable();        //generate base table
-            RandomMixing();             //mix values
-            ErraisingNumbers(47);       //clear some cells           
+            GenerateBaseTable();       //generate base table
+            RandomMixing();            //mix values          
         }
 
         timer_for_next_generation += Time.deltaTime;
-        Debug.Log(timer_for_next_generation);
         if(timer_for_next_generation > 5)
         {
+            ErraisingNumbers(47);           //clear some cells 
             isGenerated = false;
             timer_for_next_generation = 0f;
         }
@@ -75,9 +74,6 @@ public class RandomNumbers: MonoBehaviour
                 k++;
             for (int j = 0; j < 9; j++)
             {
-                //Cell cellRef = SuduckuTable[i*9+j].GetComponent<Cell>();
-                //cells[j, i] = cellRef;
-                //cellRef.RememberNumber(nums[(j + (i*3) + k)%9]);
                 cellNumbers[i, j] = nums[(j + (i * 3) + k) % 9];
             }
         }
@@ -123,7 +119,6 @@ public class RandomNumbers: MonoBehaviour
 
             if (cellNumbers[x, y] < 0)
             {
-                //if (SuduckuTable[x * 9 + y].GetComponent<Cell>().isEmpty)
                 continue;
             }
 

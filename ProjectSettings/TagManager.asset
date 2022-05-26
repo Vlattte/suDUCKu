@@ -5,10 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - GridManager
-  - fisrtCellCenter
   - fisrtCellLeftUpperCorner
   - firstButtonCellPos
   - SudokuGenerator
+  - HintButton
   layers:
   - Default
   - TransparentFX
