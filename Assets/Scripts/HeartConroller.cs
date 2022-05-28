@@ -9,24 +9,24 @@ public class HeartConroller : MonoBehaviour
     public Sprite noHeartSprite;
     public Sprite HeartSprite;
 
-    public GameObject LosePanelObj;     // Panel, that will apear after lose
-
     // Start is called before the first frame update
     void Start()
     {
         lives = 3;
     }
 
-    public void decreaseLives()
+    //return true  if no more hearts left
+    //return false if there is some more hearts left
+    public bool decreaseLives()
     {
         lives--;
         if (lives <= 0)
         {
             hearts[lives].GetComponent<SpriteRenderer>().sprite = noHeartSprite;
-            LosePanelObj.SetActive(false);
-            return;
+            return true;
         }
         hearts[lives].GetComponent<SpriteRenderer>().sprite = noHeartSprite;
+        return false;
     }
 
     public void increaseLives(int count)
@@ -35,7 +35,6 @@ public class HeartConroller : MonoBehaviour
         for(int i = 0; i < count; i++)
         {
             hearts[i].GetComponent<SpriteRenderer>().sprite = HeartSprite;
-            LosePanelObj.SetActive(false);
         }
     }
 

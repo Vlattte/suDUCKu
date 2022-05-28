@@ -9,8 +9,8 @@ public class SuduckuGrid : MonoBehaviour
     [SerializeField] private List<GameObject> sudokuTable;   // list of cells as game objects
     public HeartConroller lives;            // lives manager
 
-    public GameObject WinPanelObj;          // Panel, that will apear after win
-    public GameObject LosePanelObj;         // Panel, that will apear after losw
+    public GameObject WinPanel;          // Panel, that will apear after win
+    public GameObject GameOverPanel;         // Panel, that will apear after losw
 
     private bool isEnterBigNumbers;         // enter mode: is user enter notes or big numbers in cell (false for notes)
 
@@ -114,7 +114,7 @@ public class SuduckuGrid : MonoBehaviour
         countRightNumbers += _isNumberRight;
         if (countRightNumbers == 81)
         {
-            WinPanelObj.SetActive(true);
+            WinPanel.SetActive(true);
             return;
         }
     }
@@ -122,7 +122,8 @@ public class SuduckuGrid : MonoBehaviour
     //Increase mistakes and change one heart to gray
     public void ManageMistakesCount()
     {
-        lives.decreaseLives();
+        if (lives.decreaseLives())
+            GameOverPanel.SetActive(true);
     }
 
     //Highlight cell
