@@ -8,26 +8,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class Cell : MonoBehaviour
 {
-    public CellStruct cellData;
-    //values
-    private int mainValue;
-    private int userValue;
-    private bool[] noteValuesInCell;        //first element to check existence of any numbers        
+    public CellStruct cellData;    
     public NotesController notesController; //set number in note cells
 
     //number images
     public Sprite[] imageNumber;
 
-    //positions
-    private int gridPosX;
-    private int gridPosY;
-
     //UI
     public TextMeshProUGUI textNumber;
     public Image backImage;
-    public bool isEmpty;
-    private bool isHintCell;
-    private int isAnyNotes;
 
     //Grid controller
     private SuduckuGrid GridManager;
@@ -48,193 +37,131 @@ public class Cell : MonoBehaviour
         hintColor = new Color(0, 0, 1);
         changableNumberColor = new Color(0, 0, 0);
 
-        notActiveColor = Color.white;
         activeColor = new Color(0.6556604f, 0.896965f, 1);
-        mistakeColor = new Color(0.5960785f, 0, 0, 1);
+        notActiveColor = Color.white;
+        mistakeColor = new Color(0.5960785f, 0, 0);
     }
 
     private void Start()
     {
         GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
 
-        if(userValue != 0)
+        if(!DataHolder.IsContinueMode)
         {
-            return;
+            cellData.noteValuesInCell = new bool[9];
+            for (int i = 0; i < 9; i++)
+                cellData.noteValuesInCell[i] = false;
+            cellData.isAnyNotes = 0;
+            cellData.userValue = 0;
         }
-        noteValuesInCell = new bool[9];
-
-        for (int i = 0; i < 9; i++)
-            noteValuesInCell[i] = false;
-
-        isAnyNotes = 0;
-        userValue = 0;
-
-        cellData.noteValuesInCell = noteValuesInCell;
-        cellData.isAnyNotes = 0;
-        cellData.userValue = 0;
-        cellData.mainValue = mainValue;
     }
 
     public void ParseCellStruct(CellStruct _data)
     {
         cellData = _data;
-        mainValue = _data.mainValue;
-        userValue = _data.userValue;
-        noteValuesInCell = _data.noteValuesInCell;
-        gridPosX = _data.gridPosX;
-        gridPosY = _data.gridPosY;
-        isEmpty = _data.isEmpty;
-        isAnyNotes = _data.isAnyNotes;
-        isHintCell = _data.isHintCell;
         ReturnSaveDataInCell();
     }
 
-    public Cell(int _gridPosX, int _gridPosY)
+    public bool GetIsEmpty
     {
-        gridPosX = _gridPosX;
-        gridPosY = _gridPosY;
+        get { return cellData.isEmpty; }
     }
 
     public int GetMainValue
     {
-        get { return mainValue; }
+        get { return cellData.mainValue; }
     }
 
     public int ManageUserValue
     {
-        get { return userValue; }
-        set 
-        { 
-            userValue = value;
-            cellData.userValue = userValue;
-        }
-    }
-
-    public bool MatchUserAndMainValues
-    {
-        get { return (userValue == mainValue); }
+        get { return cellData.userValue; }
+        set { cellData.userValue = value; }
     }
 
     public void SetGridPos(int _gridPosX, int _gridPosY)
     {
-        gridPosX = _gridPosX;
-        gridPosY = _gridPosY;
-
-        cellData.gridPosX = gridPosX;
-        cellData.gridPosY = gridPosY;
+        cellData.gridPosX = _gridPosX;
+        cellData.gridPosY = _gridPosY;
     }
 
-    public int[] GetGridPos()
+    //set number in ui text mesh pro object
+    void ChangeTextNumber(string _number, Color _color)
     {
-
-        int[] pos = new int[2];
-        pos[0] = gridPosX;
-        pos[1] = gridPosY;
-        return pos;
+        textNumber.text = _number.ToString();
+        textNumber.color = _color;
     }
-
-   /* public Vector2 ManageWorldPos
-    {
-        get { return worldPos; }
-        set { worldPos = value; }
-    }*/
 
     //returns data in cell from save binary file
     //set back uservalue, mainvalue, notes, text color(mistake, hint, not changeble or changable),
     public void ReturnSaveDataInCell()
     {
-        if(isEmpty)
+        if(cellData.isEmpty)
         {
-            if (userValue != 0)
+            //if user value was in cell 
+            if (cellData.userValue != 0)
             {
-                if (userValue != mainValue)
+                if (cellData.userValue != cellData.mainValue)
                 {
-                    textNumber.text = userValue.ToString();
-                    textNumber.color = mistakeColor;
+                    //if there was a mistake
+                    ChangeTextNumber(cellData.userValue.ToString(), new Color(0.5960785f, 0, 0));
                 }
                 else
                 {
-                    textNumber.text = userValue.ToString();
-                    textNumber.color = changableNumberColor;
+                    //if user value was equal to main value
+                    ChangeTextNumber(cellData.userValue.ToString(), new Color(0, 0, 0));
                 }
             }
-            else if(isAnyNotes > 0)
+            else if(cellData.isAnyNotes > 0)
             {
                 for(int i = 0; i < 9; i++)
                 {
-                    if(noteValuesInCell[i] == true)
+                    if(cellData.noteValuesInCell[i] == true)
                         notesController.SetNoteActive(true, i+1);
                 }
             }
 
             //if hint => change text color to hint color
             if (cellData.isHintCell == true)
-                textNumber.color = hintColor;
+                ChangeTextNumber(cellData.mainValue.ToString(), new Color(0, 0, 1));
         }
         else 
         {
-            
-            textNumber.text = mainValue.ToString();
-            textNumber.color = notChangableNumberColor;
+            //if cell was filled while generating
+            ChangeTextNumber(cellData.mainValue.ToString(), new Color(99 / 255f, 99 / 255f, 99 / 255f));
         }
-    }
-
-    public void RememberNumber(int number)
-    {
-        mainValue = number;
-        cellData.mainValue = number;
     }
 
     //-number to empty cell and mainvalue = number
     //number to change main number to number
     public void SetNumberUI(int number)
     {
-        
         if (number == 0)
         {
-            isEmpty = true;
-            textNumber.text = " ";
-            textNumber.color = changableNumberColor;
-
+            ChangeTextNumber(" ", changableNumberColor);
             cellData.isEmpty = true;
         }
         else if (number < 0)
         {
             //method is used for Empty cell, when sudocku is creating
-            mainValue = -1 * number;
-            isEmpty = true;
-            textNumber.text = " ";
-            textNumber.color = changableNumberColor;
+            //set empty cell, but remember this main value
+            cellData.mainValue = -1 * number;
             cellData.isEmpty = true;
-            cellData.mainValue = mainValue;
+
+            ChangeTextNumber(" ", changableNumberColor);
         }
         else
         {
-            if (isAnyNotes > 0)
-            {
-                ClearCell();
-                isAnyNotes = 0;
-                cellData.isAnyNotes = 0;
-            }
+            if (cellData.isAnyNotes > 0)
+                ClearNotes();
 
-            mainValue = number;
-            isEmpty = false;
-            textNumber.text = mainValue.ToString();
-            textNumber.color = notChangableNumberColor;
-
+            //set cell with shown main number, so it is not empty
             cellData.mainValue = number;
             cellData.isEmpty = false;
-            /*if (number > 3)
-            {
-                textNumber.text = mainValue.ToString();
-                textNumber.color = notChangableNumber;
-            }
-            else 
-            {
-                backImage.sprite = imageNumber[number - 1];
-            }*/
+
+            ChangeTextNumber(cellData.mainValue.ToString(), notChangableNumberColor);
         }
     }
+
 
     //number range [1, 9]
     //returns  1  if number == mainvalue
@@ -242,94 +169,58 @@ public class Cell : MonoBehaviour
     //returns  0  if number == 0 or number == userValue
     public int SetUserNumber(int number)
     {
-        if (isEmpty)
+        if (cellData.isEmpty)
         {
-            if (userValue == number)
+            if (cellData.userValue == number)
             {
                 ClearCell();
-                return 0;
             }
             else 
             {
                 //if there is any user notes, 
                 //clear them and write number
-                if (isAnyNotes > 0)
-                    ClearCell();
+                if (cellData.isAnyNotes > 0)
+                    ClearNotes();
 
-                userValue = number;
                 cellData.userValue = number;
 
                 //if number isn't right increase mistakes
                 //and set mistake color
-                if (userValue != mainValue)
+                if (cellData.userValue != cellData.mainValue)
                 {
-                    textNumber.color = mistakeColor;
-                    GridManager.ManageMistakesCount();
-                    textNumber.text = userValue.ToString();
-                    cellData.userValue = number;
+                    ChangeTextNumber(cellData.userValue.ToString(), mistakeColor);
                     return -1;
                 }
-                //if there was a mistake => change color and set number
-                else if (textNumber.color == mistakeColor && userValue == mainValue)
+                else
                 {
-                    textNumber.color = changableNumberColor;
+                    ChangeTextNumber(cellData.userValue.ToString(), changableNumberColor);
+                    return 1;
                 }
-                textNumber.text = userValue.ToString();
-                cellData.userValue = number;
-                return 1;
             } 
         }
         return 0;
     }
 
-    public void SetHint()
-    {
-        if (isAnyNotes > 0)
-        {
-            for (int i = 0; i < 9; i++)
-            {
-                notesController.SetNoteActive(false, i + 1);
-                noteValuesInCell[i] = false;
-                cellData.noteValuesInCell[i] = false;
-            }
-            isAnyNotes = 0;
-
-            cellData.isAnyNotes = 0;
-        }
-        textNumber.text = mainValue.ToString();
-        textNumber.color = hintColor;
-        userValue = mainValue;
-        isHintCell = true;
-
-        cellData.isHintCell = true;
-        cellData.userValue = mainValue;
-    }
-
     //number range [1, 9]
     public void SetLittleNumber(int number)
     {
-        if (isEmpty)
+        if (cellData.isEmpty)
         {
-            if (userValue != 0)
-            {
+            if (cellData.userValue != 0)
                 ClearCell();
-            }
 
-            //Color temp_color = hintValues[number - 1].GetComponent<Image>().color;
-            if (noteValuesInCell[number-1] == true)
+            if (cellData.noteValuesInCell[number-1] == true)
             {
-                noteValuesInCell[number-1] = false;
-                //hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 0f);
+                //if this note is already in this cell, hide it 
                 notesController.SetNoteActive(false, number);
-                isAnyNotes--;
+  
                 cellData.isAnyNotes--;
+                cellData.noteValuesInCell[number - 1] = false;
             }
             else
             {
-                noteValuesInCell[number-1] = true;
-                //hintValues[number - 1].GetComponent<Image>().color = new Color(temp_color.r, temp_color.g, temp_color.b, 1f);
+                //if there is no note in this cell, show it
                 notesController.SetNoteActive(true, number);
-                isAnyNotes++;
 
                 cellData.noteValuesInCell[number - 1] = true;
                 cellData.isAnyNotes++;
@@ -337,9 +228,19 @@ public class Cell : MonoBehaviour
         }
     }
 
+    public void SetHint()
+    {
+        if (cellData.isAnyNotes > 0)
+            ClearNotes();
+        ChangeTextNumber(cellData.mainValue.ToString(), hintColor);
+
+        cellData.userValue = cellData.mainValue;
+        cellData.isHintCell = true;
+    }
+
     private void OnMouseDown()
     {
-        GridManager.SetActiveCell(gridPosX, gridPosY);
+        GridManager.SetActiveCell(cellData.gridPosX, cellData.gridPosY);
     }
 
     public void SetCellActive(bool isMakeActive)
@@ -352,44 +253,35 @@ public class Cell : MonoBehaviour
 
     public void ClearCellInRestart()
     {
-        textNumber.text = " ";
-        if (isAnyNotes > 0)
-        {
-            for (int i = 0; i < 9; i++)
-            {
-                notesController.SetNoteActive(false, i + 1);
-                noteValuesInCell[i] = false;
-                cellData.noteValuesInCell[i] = false;
-            }
-            isAnyNotes = 0;
-
-            cellData.isAnyNotes = 0;
-            cellData.isHintCell = false;
-        }
+        ChangeTextNumber(" ", changableNumberColor);
+        if (cellData.isAnyNotes > 0)
+            ClearNotes();
     }
 
     public void ClearCell()
     {
-        if (isEmpty)
+        if (cellData.isEmpty)
         {
             //if GetEnterModeStatus == true
             //big numbers
-            textNumber.text = " ";
-            backImage.color = activeColor;
-            if (isAnyNotes > 0)
-            {
-                for (int i = 0; i < 9; i++)
-                {
-                    notesController.SetNoteActive(false, i+1);
-                    noteValuesInCell[i] = false;
-                    cellData.noteValuesInCell[i] = false;
-                }
-                isAnyNotes = 0;
-                cellData.isAnyNotes = 0;
-            }
-            userValue = 0;
+            ChangeTextNumber(" ", activeColor);
+            if (cellData.isAnyNotes > 0)
+                ClearNotes();
+            
             cellData.userValue = 0;
             cellData.isHintCell = false;
         }
+    }
+
+    private void ClearNotes()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            notesController.SetNoteActive(false, i+1);        
+            cellData.noteValuesInCell[i] = false;
+        }
+
+        cellData.isAnyNotes = 0;
+        cellData.isHintCell = false;
     }
 }

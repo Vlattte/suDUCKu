@@ -10,10 +10,11 @@ public class SuduckuGrid : MonoBehaviour
     public HeartConroller lives;            // lives manager
 
     public GameObject WinPanelObj;          // Panel, that will apear after win
+    public GameObject LosePanelObj;         // Panel, that will apear after losw
 
-    private bool isEnterBigNumbers;          // enter mode: is user enter notes or big numbers in cell (false for notes)
+    private bool isEnterBigNumbers;         // enter mode: is user enter notes or big numbers in cell (false for notes)
 
-    private int countRightNumbers;           // count number of right filled cells, if equal to 81, game is won
+    private int countRightNumbers;          // count number of right filled cells, if equal to 81, game is won
     private int hintCount;                  // number of available hints
     private int activeCellX, activeCellY;   // position of hightlighted cell (suducku table positions: from 0 to 80)
 
@@ -28,7 +29,7 @@ public class SuduckuGrid : MonoBehaviour
         saveFilePath = Application.persistentDataPath + "/Save.dat";
 
         //load save, if continue pressed
-        if (DataHolder.ManagePlayMode)
+        if (DataHolder.IsContinueMode)
         {
             cells = SaveSudoku.LoadData<CellStruct[]>(saveFilePath);
             CellsToSudokuTable();
@@ -39,7 +40,7 @@ public class SuduckuGrid : MonoBehaviour
     private void Start()
     {
         //if continue mode
-        if(DataHolder.ManagePlayMode == true)
+        if(DataHolder.IsContinueMode == true)
         {
             //number of not filled cells
             countRightNumbers = PlayerPrefs.GetInt("countRightNumbers");
@@ -164,6 +165,8 @@ public class SuduckuGrid : MonoBehaviour
         if(activeCellX != -1)
         {
             int isRightNumber = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetUserNumber(value);
+            if (isRightNumber == -1)
+                ManageMistakesCount();
             ChangeRightNumberCount(isRightNumber);
         }
     }
@@ -184,7 +187,7 @@ public class SuduckuGrid : MonoBehaviour
         int idx = 0;
         foreach (GameObject cell in sudokuTable)
         {
-            if (cell.GetComponent<Cell>().isEmpty)
+            if (cell.GetComponent<Cell>().GetIsEmpty)
             {
                 //clear notes and number in cell
                 cell.GetComponent<Cell>().ClearCellInRestart();
@@ -207,7 +210,7 @@ public class SuduckuGrid : MonoBehaviour
         if (activeCellX != -1)
         {
             Cell tempCell = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>();
-            if (tempCell.isEmpty & tempCell.ManageUserValue == 0)
+            if (tempCell.GetIsEmpty & tempCell.ManageUserValue == 0)
             {
                 //fill cell with main number of hint color
                 sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetHint();

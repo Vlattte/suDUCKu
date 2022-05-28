@@ -23,6 +23,7 @@ public class MainMenuScript : MonoBehaviour
 
 	public void LoadMainScene()
     {
+		DataHolder.IsContinueMode = false;
 		GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>().SaveCurCells();
 		SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
@@ -32,18 +33,20 @@ public class MainMenuScript : MonoBehaviour
 		string saveFilePath = Application.persistentDataPath + "/Save.dat";
 		if(File.Exists(saveFilePath))
         {
-			DataHolder.ManagePlayMode = true;
+			DataHolder.IsContinueMode = true;
 			SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
 		}
 	}
 
 	public void NewGame()
     {
+		DataHolder.IsContinueMode = false;
 		GameObject.FindGameObjectWithTag("SudokuGenerator").GetComponent<SudokuGenerator>().NewGameGenerator();
 	}
 
 	public void RestartGame()
     {
+		DataHolder.IsContinueMode = false;
 		GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>().RestartGame();
 	}
 

@@ -12,14 +12,16 @@ public class SudokuGenerator : MonoBehaviour
 
     private int difficulty;
 
-
-    private void Update()
+    private void Awake()
     {
-        if(DataHolder.ManagePlayMode)
+        if (DataHolder.IsContinueMode)
         {
             isGenerated = true;
         }
+    }
 
+    private void Update()
+    {
         if (!isGenerated)
         {
             isGenerated = true;
@@ -63,13 +65,12 @@ public class SudokuGenerator : MonoBehaviour
         gridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
         cellNumbers = new int[9, 9];
         cellNumbersForSolver = new int[81];
-        //SuduckuTable = gridManager.sudokuTable;
 
-
-        isGenerated = false;
+        if(!DataHolder.IsContinueMode)
+            isGenerated = false;
     }
 
-    void FillCellsIncontinue()
+    void FillCellsInContinue()
     {
         for(int i = 0; i < 81; i++)
         {
@@ -100,9 +101,6 @@ public class SudokuGenerator : MonoBehaviour
                 k++;
             for (int j = 0; j < 9; j++)
             {
-                //Cell cellRef = SuduckuTable[i*9+j].GetComponent<Cell>();
-                //cells[j, i] = cellRef;
-                //cellRef.RememberNumber(nums[(j + (i*3) + k)%9]);
                 cellNumbers[i, j] = nums[(j + (i * 3) + k) % 9];
             }
         }

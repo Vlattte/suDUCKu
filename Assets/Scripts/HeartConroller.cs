@@ -31,6 +31,7 @@ public class HeartConroller : MonoBehaviour
 
     public void increaseLives(int count)
     {
+        lives = count;
         for(int i = 0; i < count; i++)
         {
             hearts[i].GetComponent<SpriteRenderer>().sprite = HeartSprite;

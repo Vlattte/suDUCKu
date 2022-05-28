@@ -5196,6 +5196,7 @@ MonoBehaviour:
   - {fileID: 886535936}
   lives: {fileID: 1568096246}
   WinPanelObj: {fileID: 565780275}
+  LosePanelObj: {fileID: 0}
   cells: []
   saveFilePath: 
 --- !u!4 &1820456571
@@ -26240,6 +26241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2289496968135660139, guid: fac19d3876070414b9f5d23cac6ceabe, type: 3}
+    - {fileID: 2289496968135660138, guid: fac19d3876070414b9f5d23cac6ceabe, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: fac19d3876070414b9f5d23cac6ceabe, type: 3}
 --- !u!1001 &4974649648658434118
 PrefabInstance:

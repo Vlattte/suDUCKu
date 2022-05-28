@@ -13,7 +13,7 @@ public static class DataHolder
         set { difficulty = value; }
     }
 
-    public static bool ManagePlayMode
+    public static bool IsContinueMode
     {
         get { return isContinuePressed; }
         set { isContinuePressed = value; }
