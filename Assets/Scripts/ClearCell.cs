@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class ClearCell : MonoBehaviour
 {
-    private SuduckuGrid GridManager;
+    private SudokuGrid GridManager;
     private void Start()
     {
-        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
+        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>();
     }
    
     private void OnMouseDown()

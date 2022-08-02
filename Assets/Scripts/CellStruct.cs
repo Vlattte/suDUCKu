@@ -16,4 +16,7 @@ public class CellStruct
     public bool isEmpty;
     public int isAnyNotes;
     public bool isHintCell;
+
+    public bool isMistakes;
 }
+

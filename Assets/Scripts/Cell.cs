@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 public class Cell : MonoBehaviour
 {
@@ -19,7 +15,7 @@ public class Cell : MonoBehaviour
     public Image backImage;
 
     //Grid controller
-    private SuduckuGrid GridManager;
+    private SudokuGrid GridManager;
 
     //Image colors
     private Color notActiveColor;
@@ -39,20 +35,35 @@ public class Cell : MonoBehaviour
 
         activeColor = new Color(0.6556604f, 0.896965f, 1);
         notActiveColor = Color.white;
+        
         mistakeColor = new Color(0.5960785f, 0, 0);
     }
 
     private void Start()
     {
-        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
+        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>();
+        cellData.isMistakes = DataHolder.ManageModes.isMistakes; 
+        if (cellData.isMistakes)
+            MakeRightMistakeColor();
 
-        if(!DataHolder.IsContinueMode)
+        if (!DataHolder.IsContinueMode)
         {
             cellData.noteValuesInCell = new bool[9];
             for (int i = 0; i < 9; i++)
-                cellData.noteValuesInCell[i] = false;
+                cellData.noteValuesInCell[i] = false;   
             cellData.isAnyNotes = 0;
             cellData.userValue = 0;
+        }
+    }
+
+    private void Update()
+    {
+        if(DataHolder.isModeChanged == true)
+        {
+            if (DataHolder.ManageModes.isMistakes)
+                cellData.isMistakes = true;
+            else
+                cellData.isMistakes = false;
         }
     }
 
@@ -60,6 +71,11 @@ public class Cell : MonoBehaviour
     {
         cellData = _data;
         ReturnSaveDataInCell();
+    }
+
+    public void MakeRightMistakeColor()
+    {
+        mistakeColor = new Color(0.5960785f, 0, 0);
     }
 
     public bool GetIsEmpty
@@ -76,6 +92,11 @@ public class Cell : MonoBehaviour
     {
         get { return cellData.userValue; }
         set { cellData.userValue = value; }
+    }
+
+    public bool MatchUserAndMainValues()
+    {
+        return cellData.userValue == cellData.mainValue;
     }
 
     public void SetGridPos(int _gridPosX, int _gridPosY)
@@ -100,7 +121,7 @@ public class Cell : MonoBehaviour
             //if user value was in cell 
             if (cellData.userValue != 0)
             {
-                if (cellData.userValue != cellData.mainValue)
+                if (cellData.userValue != cellData.mainValue && DataHolder.ManageModes.isMistakes)
                 {
                     //if there was a mistake
                     ChangeTextNumber(cellData.userValue.ToString(), new Color(0.5960785f, 0, 0));
@@ -162,7 +183,6 @@ public class Cell : MonoBehaviour
         }
     }
 
-
     //number range [1, 9]
     //returns  1  if number == mainvalue
     //returns -1 if number != mainvalue
@@ -188,7 +208,10 @@ public class Cell : MonoBehaviour
                 //and set mistake color
                 if (cellData.userValue != cellData.mainValue)
                 {
-                    ChangeTextNumber(cellData.userValue.ToString(), mistakeColor);
+                    if(cellData.isMistakes)
+                        ChangeTextNumber(cellData.userValue.ToString(), mistakeColor);
+                    else
+                        ChangeTextNumber(cellData.userValue.ToString(), changableNumberColor);
                     return -1;
                 }
                 else
@@ -228,6 +251,18 @@ public class Cell : MonoBehaviour
         }
     }
 
+    public bool CheckConsistOfNoteNumber(int note, bool isClearAfterFinding)
+    {
+
+       if (cellData.noteValuesInCell[note-1])
+       {
+            if (isClearAfterFinding)
+                SetLittleNumber(note);
+            return true;
+       }
+       return false;
+    }
+
     public void SetHint()
     {
         if (cellData.isAnyNotes > 0)
@@ -251,6 +286,20 @@ public class Cell : MonoBehaviour
             backImage.color = notActiveColor; 
     }
 
+    //sets cell highlithed if number == number in cell
+    public void SetHightLighted(int number)
+    {
+        if (cellData.userValue == number ||
+           !cellData.isEmpty && cellData.mainValue == number)
+        {
+            backImage.color = activeColor;
+        }
+        else
+        {
+            backImage.color = notActiveColor;
+        }
+    }
+
     public void ClearCellInRestart()
     {
         ChangeTextNumber(" ", changableNumberColor);
@@ -258,8 +307,9 @@ public class Cell : MonoBehaviour
             ClearNotes();
     }
 
-    public void ClearCell()
+    public int ClearCell()
     {
+        int returnNum = 0;
         if (cellData.isEmpty)
         {
             //if GetEnterModeStatus == true
@@ -268,9 +318,15 @@ public class Cell : MonoBehaviour
             if (cellData.isAnyNotes > 0)
                 ClearNotes();
             
+            //check if player delete right number
+            //and decrease right number count
+            if (cellData.userValue == cellData.mainValue)
+                returnNum = -1;
+
             cellData.userValue = 0;
             cellData.isHintCell = false;
         }
+        return returnNum;
     }
 
     private void ClearNotes()

@@ -8,7 +8,7 @@ public class ButtonCell : MonoBehaviour
 {
     [Range(1,9)]
     public int buttonValue;
-    private SuduckuGrid GridManager;
+    private SudokuGrid GridManager;
     public TextMeshProUGUI textNumber;
     public Image image;
 
@@ -17,7 +17,7 @@ public class ButtonCell : MonoBehaviour
 
     private void Start()
     {
-        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
+        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>();
     }
 
     private void OnMouseDown()

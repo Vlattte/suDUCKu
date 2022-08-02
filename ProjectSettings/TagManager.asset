@@ -9,6 +9,7 @@ TagManager:
   - firstButtonCellPos
   - SudokuGenerator
   - HintButton
+  - Sudoku
   layers:
   - Default
   - TransparentFX

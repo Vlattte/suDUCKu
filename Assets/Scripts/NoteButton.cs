@@ -5,14 +5,14 @@ using UnityEngine.UI;
 
 public class NoteButton : MonoBehaviour
 {
-    private SuduckuGrid GridManager;
+    private SudokuGrid GridManager;
     public GameObject pencilObj;
     private bool isLittleNums;
 
 
     private void Start()
     {
-        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
+        GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>();
         isLittleNums = false;
     }
 

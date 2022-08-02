@@ -24,7 +24,7 @@ public class MainMenuScript : MonoBehaviour
 	public void LoadMainScene()
     {
 		DataHolder.IsContinueMode = false;
-		GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>().SaveCurCells();
+		GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>().SaveCurCells();
 		SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 
@@ -47,8 +47,43 @@ public class MainMenuScript : MonoBehaviour
 	public void RestartGame()
     {
 		DataHolder.IsContinueMode = false;
-		GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>().RestartGame();
+		GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>().RestartGame();
 	}
+
+	public void HintsSwicher()
+    {
+		DataHolder.SetSudokuModesToOposite("HINTS");
+    }
+
+	public void TimerSwicher()
+	{
+		DataHolder.SetSudokuModesToOposite("TIMER");
+	}
+
+	public void LivesSwicher()
+	{
+		DataHolder.SetSudokuModesToOposite("LIVES");
+	}
+
+	public void MistakesSwitcher()
+    {
+		DataHolder.SetSudokuModesToOposite("MISTAKES");
+	}
+
+	public void ResetModes()
+    {
+		DataHolder.ResetModes();
+    }
+
+	public void SaveModesInBuf()
+    {
+		DataHolder.SaveModesInBuf();
+    }
+
+	public void ReturnSavedModes()
+    {
+		DataHolder.ReturnSavedModes();
+    }
 
 	public void ExitPressed()
 	{

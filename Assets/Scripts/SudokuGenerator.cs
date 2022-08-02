@@ -4,7 +4,7 @@ using UnityEngine;
 public class SudokuGenerator : MonoBehaviour
 {
     public List<GameObject> SudokuTable;
-    public SuduckuGrid gridManager;
+    public SudokuGrid gridManager;
     private bool isGenerated;
 
     private int[,] cellNumbers;
@@ -47,6 +47,7 @@ public class SudokuGenerator : MonoBehaviour
 
     public void EraisingWithNewDifficulty(int _difficulty)
     {
+        gridManager.SetModeChangeFlag();
         difficulty = _difficulty;
         ErraisingNumbers();
         NumbersToCells();
@@ -62,7 +63,7 @@ public class SudokuGenerator : MonoBehaviour
         //Set difficulty that user chose
         difficulty = DataHolder.ManageDifficulty;
 
-        gridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SuduckuGrid>();
+        gridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>();
         cellNumbers = new int[9, 9];
         cellNumbersForSolver = new int[81];
 

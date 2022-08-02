@@ -20,11 +20,14 @@ public class HeartConroller : MonoBehaviour
     public bool decreaseLives()
     {
         lives--;
-        if (lives <= 0)
+        if (lives == 0)
         {
             hearts[lives].GetComponent<SpriteRenderer>().sprite = noHeartSprite;
             return true;
         }
+        else if (lives < 0)
+            return false;
+
         hearts[lives].GetComponent<SpriteRenderer>().sprite = noHeartSprite;
         return false;
     }
@@ -41,5 +44,16 @@ public class HeartConroller : MonoBehaviour
     public int GetLives()
     {
         return lives;
+    }
+
+    public void CheckIsLivesRight(int _lives = -1)
+    {
+        if (_lives == -1)
+            _lives = lives;
+
+        for (int i = 0; i < 3 - _lives; i++)
+        {
+            decreaseLives();
+        }
     }
 }
