@@ -13,6 +13,7 @@ public class MainMenuScript : MonoBehaviour
 
 	public void SetDiffilcultyAndEraiseNumbers(int _difficulty)
     {
+		SetDifficulty(_difficulty);
 		GameObject.FindGameObjectWithTag("SudokuGenerator").GetComponent<SudokuGenerator>().EraisingWithNewDifficulty(_difficulty);
 	}
 

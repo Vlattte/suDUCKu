@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class ColorsLoader : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class ColorsLoader : MonoBehaviour
     {
         saveFilePath = Application.persistentDataPath + "/Colors.dat";
         ColorChanger();
+            
         if (sudokuImage != null)
             sudokuImage.color
                 = new Color(colors.sudokuBackColor[0], colors.sudokuBackColor[1], colors.sudokuBackColor[2]);

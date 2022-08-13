@@ -21,4 +21,9 @@ public static class SaveSystem
             return data;
         }
     }
+
+    public static void DeleteFile(string _filePath)
+    {
+        File.Delete(_filePath);
+    }
 }

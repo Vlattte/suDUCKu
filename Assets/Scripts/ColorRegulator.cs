@@ -27,21 +27,28 @@ public class ColorRegulator : MonoBehaviour
     private Color defaultSudokuBackground;
     private Color defaultBackground;
 
-    void Start()
+    void Awake()
     {
+        saveFilePath = Application.persistentDataPath + "/Colors.dat";
+        //SaveSystem.DeleteFile(saveFilePath);
+        
         //set default colors
         defaultBackground = new Color(0.4784314f, 0.6235294f, 0.8392157f);
         defaultSudokuBackground = new Color(0.7411765f, 0.5490196f, 0.3960784f);
-
-        saveFilePath = Application.persistentDataPath + "/Colors.dat";
-
-        whatColorStr = " ";
-
+        
         if (File.Exists(saveFilePath))
         {
             colors = SaveSystem.LoadData<ColorStruct>(saveFilePath);
         }
-         
+        else
+        {
+            InitWithDefaultColor();
+        }
+    }
+
+    void Start()
+    {
+        whatColorStr = " ";
 
         redSlider.onValueChanged.AddListener((v) =>
         {
@@ -90,24 +97,35 @@ public class ColorRegulator : MonoBehaviour
             colors.sudokuBackColor = new float[3] { resultColorImg.color.r, resultColorImg.color.g, resultColorImg.color.b };
             DataHolder.isTimeToLoadColors[1] = true;
         }
-            
+           
         SaveSystem.SaveData(saveFilePath, colors);
     }
+
+    private void InitWithDefaultColor()
+    {
+        colors.backGroundColor = new float[3] { defaultBackground.r, defaultBackground.g, defaultBackground.b };
+        colors.sudokuBackColor = new float[3] { defaultSudokuBackground.r, defaultSudokuBackground.g, defaultSudokuBackground.b };
+        SaveSystem.SaveData(saveFilePath, colors);
+    }
+
 
     public void SetDefaultColor()
     {
         if (DataHolder.whatColorsChangedStr == "BackColor")
         {
             resultColorImg.color = defaultBackground;
-            //colors.sudokuBackColor = new float[3] { defaultBackground.r, defaultBackground.g, defaultBackground.b };
+            SetSliders(defaultBackground);
+            //colors.backGroundColor = new float[3] { defaultBackground.r, defaultBackground.g, defaultBackground.b };
         }
 
         if (DataHolder.whatColorsChangedStr == "SudokuColor")
         {
             resultColorImg.color = defaultSudokuBackground;
+            SetSliders(defaultSudokuBackground);
             //colors.sudokuBackColor = new float[3] { defaultSudokuBackground.r, defaultSudokuBackground.g, defaultSudokuBackground.b };
         }
 
+        //SaveColor();
         //SaveSystem.SaveData(saveFilePath, colors);
     }
 }

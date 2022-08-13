@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using UnityEngine.UI;
 
 [System.Serializable]
 public struct SaveDataStruct
@@ -8,22 +9,24 @@ public struct SaveDataStruct
     [SerializeField] public ModesStruct modes;
     [SerializeField] public CellStruct[] cells;
     [SerializeField] public float timerValue;
+    [SerializeField] public int[] countOfDifNums;   //count of all types of nums
 }
 
 public class SudokuGrid : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> sudokuTable;   // list of cells as game objects
     public HeartConroller lives;            // lives manager
     private bool isSetModes;
 
     public GameObject WinPanel;             // Panel, that will apear after win
-    public GameObject GameOverPanel;        // Panel, that will apear after losw
+    public GameObject GameOverPanel;        // Panel, that will apear after lose
     public GameObject Timer;                // timer object
     public GameObject LivesObj;             // lives objects
     public GameObject HintObj;
+    public List<GameObject> NumButtons;
 
     private bool isEnterBigNumbers;         // enter mode: is user enter notes or big numbers in cell (false for notes)
 
+    public int[] countOfDifNums;           //count of all types of nums
     private int countRightNumbers;          // count number of right filled cells, if equal to 81, game is won
     private int hintCount;                  // number of available hints
     private int activeCellX, activeCellY;   // position of hightlighted cell (suducku table positions: from 0 to 80)
@@ -35,6 +38,7 @@ public class SudokuGrid : MonoBehaviour
     [SerializeField] private SaveDataStruct SudokuData;
 
     //save data
+    [SerializeField] private List<GameObject> sudokuTable;   // list of cells as game objects
     [SerializeField] private CellStruct[] cells;  //buffer of cells
     [SerializeField] private string saveFilePath; //saved data path
 
@@ -49,7 +53,7 @@ public class SudokuGrid : MonoBehaviour
             SudokuData = SaveSystem.LoadData<SaveDataStruct>(saveFilePath);
             cells = SudokuData.cells;
             Timer.GetComponent<TimerScript>().ManageTimerValue = SudokuData.timerValue;
-           
+            countOfDifNums = SudokuData.countOfDifNums;
 
             CellsToSudokuTable();
             File.Delete(saveFilePath);
@@ -58,6 +62,8 @@ public class SudokuGrid : MonoBehaviour
 
     private void Start()
     {
+        savePeriod = 10000;
+
         isSetModes = false;
         saveTimer = 0;
 
@@ -74,7 +80,8 @@ public class SudokuGrid : MonoBehaviour
             //clear prefs needed to grid
             ClearGridPrefs();
 
-            countRightNumbers = 81 - DataHolder.ManageDifficulty;
+            InitCountOfDifNums();
+            SetRightNumberCount();
             hintCount = 3;
 
             //set modes chosen
@@ -129,7 +136,7 @@ public class SudokuGrid : MonoBehaviour
     {
         //save sudoku every 10 seconds
         saveTimer += Time.deltaTime;
-        if (saveTimer >= 10000)
+        if (saveTimer >= savePeriod)
         {
             SaveCurCells();
             saveTimer = 0;
@@ -138,12 +145,71 @@ public class SudokuGrid : MonoBehaviour
         //if need to change modes
         if(isSetModes)
         {
+            //bacause this construction works when game is new
+            SetRightNumberCount();
+
             SetModes();
             isSetModes = false;
             lives.CheckIsLivesRight();
         }
     }
 
+    //init count of right numbers
+    void SetRightNumberCount()
+    {
+        countRightNumbers = 81 - DataHolder.ManageDifficulty;
+    }
+
+    void InitCountOfDifNums()
+    {
+        countOfDifNums = new int[9];
+        for (int i = 0; i < 9; i++)
+            countOfDifNums[i] = 0;
+    }
+
+    public void ChangeCountOfDifNum(int number, int changeNum)
+    {
+        countOfDifNums[number-1] += changeNum;
+        CheckCountOfDifNums(number);
+    }
+
+    void CheckCountOfDifNums(int number)
+    {
+
+        Debug.Log(countOfDifNums[number - 1]);
+        if (countOfDifNums[number-1] == 9)
+        {
+            NumButtons[number - 1].GetComponent<Image>().color = Color.green;
+        }
+        else if(!NumButtons[number - 1].activeInHierarchy)
+        {
+            Debug.Log("IT'S WAS INACTIVE!!!");
+            NumButtons[number - 1].GetComponent<Image>().color = Color.black;
+        }
+    }
+
+
+    void CheckEveryFlagAfterEnter(int number, int wasItRight, bool isItRight)
+    {
+        if(wasItRight == -1) //so it was right
+        {
+            //decrease this num count and right number count
+            ChangeCountOfDifNum(number, -1);
+            ChangeRightNumberCount(-1);
+        }
+        else if(isItRight)
+        {
+            //increase this num count
+            ChangeCountOfDifNum(number, 1);
+            ChangeRightNumberCount(1);
+        }
+        else
+        {
+            //so it's mistake
+            ManageMistakesCount();
+        }
+        
+    }
 
     //broadcast that there is a need to change modes
     public void SetModeChangeFlag()
@@ -170,6 +236,7 @@ public class SudokuGrid : MonoBehaviour
         }
         SudokuData.cells = cells;
         SudokuData.timerValue = Timer.GetComponent<TimerScript>().ManageTimerValue;
+        SudokuData.countOfDifNums = countOfDifNums;
 
         SaveSystem.SaveData(saveFilePath, SudokuData);
     }
@@ -197,7 +264,9 @@ public class SudokuGrid : MonoBehaviour
     //Count number of right cells
     public void ChangeRightNumberCount(int _isNumberRight)
     {
+        Debug.Log(_isNumberRight + "  countRightNumbers = " + countRightNumbers);
         countRightNumbers += _isNumberRight;
+        Debug.Log("  After countRightNumbers = " + countRightNumbers);
         if (countRightNumbers == 81)
         {
             WinPanel.SetActive(true);
@@ -242,7 +311,7 @@ public class SudokuGrid : MonoBehaviour
 
     public void ShowAllChoseNumbers()
     {
-        int number = 0;
+        int number;
         if (sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().GetIsEmpty)
             number = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().ManageUserValue;
         else
@@ -275,11 +344,23 @@ public class SudokuGrid : MonoBehaviour
         if(activeCellX != -1)
         {
             int isRightNumber = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetUserNumber(number);
+            
             if (isRightNumber == -1)
+            {
                 ManageMistakesCount();
-            ChangeRightNumberCount(isRightNumber);
+            }
+
             if (isRightNumber == 1)
+            {
                 ClearNotesOfRightNumber(number);
+                ChangeCountOfDifNum(number, 1);
+                ChangeRightNumberCount(1);
+            }
+
+            if (isRightNumber == 0)
+            {
+                CheckEveryFlagAfterEnter(number, -1, false);
+            }
         }
     }
 
@@ -289,7 +370,9 @@ public class SudokuGrid : MonoBehaviour
         //if there is active cell, set note
         if (activeCellX != -1)
         {
-            sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetLittleNumber(value);
+            int[] values = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetLittleNumber(value);
+            //ChangeRightNumberCount(wasUserNumRight);
+            CheckEveryFlagAfterEnter(values[0], values[1], false);
         }
     }
 
@@ -336,6 +419,7 @@ public class SudokuGrid : MonoBehaviour
     public void RestartGame()
     {
         int idx = 0;
+        SetRightNumberCount();
         foreach (GameObject cell in sudokuTable)
         {
             if (cell.GetComponent<Cell>().GetIsEmpty)
@@ -380,8 +464,8 @@ public class SudokuGrid : MonoBehaviour
     //Set cell empty
     public void ClearCell()
     {
-        int isRightNumber = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().ClearCell();
-        ChangeRightNumberCount(isRightNumber);
+        int[] values = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().ClearCell();
+        CheckEveryFlagAfterEnter(values[0], values[1], false);
     }
     ///////////////////////////////
 }

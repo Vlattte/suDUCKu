@@ -8,7 +8,7 @@ public class CellStruct
 {
     public int mainValue;
     public int userValue;
-    public bool[] noteValuesInCell;        //first element to check existence of any numbers   
+    public bool[] noteValuesInCell; 
 
     public int gridPosX;
     public int gridPosY;

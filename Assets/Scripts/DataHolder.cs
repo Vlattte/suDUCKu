@@ -22,8 +22,9 @@ public static class DataHolder
     private static ModesStruct tempModes;
     public static bool isModeChanged;
 
-    //what colors was changed
-    public static string whatColorsChangedStr;
+    //colors parametres
+    public static string whatColorsChangedStr;  //what colors was changed
+    public static bool isColorsInit = false;
 
     public static bool[] isTimeToLoadColors = new bool[2];
 

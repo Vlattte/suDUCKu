@@ -152,6 +152,7 @@ public class Cell : MonoBehaviour
         }
     }
 
+    //function to init cells, before game
     //-number to empty cell and mainvalue = number
     //number to change main number to number
     public void SetNumberUI(int number)
@@ -178,11 +179,13 @@ public class Cell : MonoBehaviour
             //set cell with shown main number, so it is not empty
             cellData.mainValue = number;
             cellData.isEmpty = false;
+            GridManager.ChangeCountOfDifNum(number, 1);
 
             ChangeTextNumber(cellData.mainValue.ToString(), notChangableNumberColor);
         }
     }
 
+    //function to change number in the cell
     //number range [1, 9]
     //returns  1  if number == mainvalue
     //returns -1 if number != mainvalue
@@ -193,7 +196,11 @@ public class Cell : MonoBehaviour
         {
             if (cellData.userValue == number)
             {
-                ClearCell();
+                if(MatchUserAndMainValues())
+                {
+                    ClearCell();
+                    return 0;
+                }
             }
             else 
             {
@@ -221,22 +228,35 @@ public class Cell : MonoBehaviour
                 }
             } 
         }
-        return 0;
+        return 2;
     }
 
     //number range [1, 9]
-    public void SetLittleNumber(int number)
+    public int[] SetLittleNumber(int number)
     {
+        //returns 0 if cell was clear or mistake
+        //returns -1 if there was right value in cell
+        int[] returnValues = new int[2];
+        returnValues[0] = cellData.mainValue;
+
         if (cellData.isEmpty)
         {
             if (cellData.userValue != 0)
-                ClearCell();
+            {
+                if (MatchUserAndMainValues())
+                    returnValues[1] = -1;
+                else
+                    returnValues[1] = 0;    //mistake number in cell
 
-            if (cellData.noteValuesInCell[number-1] == true)
+                ClearCell();
+            }
+                
+
+            if (cellData.noteValuesInCell[number - 1] == true)
             {
                 //if this note is already in this cell, hide it 
                 notesController.SetNoteActive(false, number);
-  
+
                 cellData.isAnyNotes--;
                 cellData.noteValuesInCell[number - 1] = false;
             }
@@ -249,6 +269,7 @@ public class Cell : MonoBehaviour
                 cellData.isAnyNotes++;
             }
         }
+        return returnValues;
     }
 
     public bool CheckConsistOfNoteNumber(int note, bool isClearAfterFinding)
@@ -300,16 +321,32 @@ public class Cell : MonoBehaviour
         }
     }
 
+    void ClearCellData()
+    {
+        cellData.userValue = 0;
+        cellData.isAnyNotes = 0;
+        cellData.isHintCell = false;
+
+        for (int i = 0; i < 9; i++)
+            cellData.noteValuesInCell[i] = false;
+
+    }
+
     public void ClearCellInRestart()
     {
         ChangeTextNumber(" ", changableNumberColor);
+        ClearCellData();
+
         if (cellData.isAnyNotes > 0)
             ClearNotes();
     }
 
-    public int ClearCell()
+    public int[] ClearCell()
     {
-        int returnNum = 0;
+        int[] returnValues = new int[2];
+        returnValues[0] = cellData.mainValue;
+        returnValues[1] = 0;
+
         if (cellData.isEmpty)
         {
             //if GetEnterModeStatus == true
@@ -321,12 +358,12 @@ public class Cell : MonoBehaviour
             //check if player delete right number
             //and decrease right number count
             if (cellData.userValue == cellData.mainValue)
-                returnNum = -1;
+                returnValues[1] = -1;
 
             cellData.userValue = 0;
             cellData.isHintCell = false;
         }
-        return returnNum;
+        return returnValues;
     }
 
     private void ClearNotes()
