@@ -38,6 +38,7 @@ public class SudokuGenerator : MonoBehaviour
         }
     }
 
+
     public void NewGameGenerator()
     {
         gridManager.lives.increaseLives(3);

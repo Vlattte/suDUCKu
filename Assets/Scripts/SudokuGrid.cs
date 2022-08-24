@@ -189,7 +189,7 @@ public class SudokuGrid : MonoBehaviour
     }
 
 
-    void CheckEveryFlagAfterEnter(int number, int wasItRight, bool isItRight)
+    void CheckEveryFlagAfterEnter(int number, int wasItRight, bool isItRight, bool isNote = false)
     {
         if(wasItRight == -1) //so it was right
         {
@@ -205,8 +205,11 @@ public class SudokuGrid : MonoBehaviour
         }
         else
         {
-            //so it's mistake
-            ManageMistakesCount();
+            if (!isNote)
+            {
+                //so it's mistake
+                ManageMistakesCount();
+            }
         }
         
     }
@@ -372,7 +375,7 @@ public class SudokuGrid : MonoBehaviour
         {
             int[] values = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetLittleNumber(value);
             //ChangeRightNumberCount(wasUserNumRight);
-            CheckEveryFlagAfterEnter(values[0], values[1], false);
+            CheckEveryFlagAfterEnter(values[0], values[1], false, true);
         }
     }
 

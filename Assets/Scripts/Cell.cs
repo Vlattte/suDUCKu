@@ -179,7 +179,8 @@ public class Cell : MonoBehaviour
             //set cell with shown main number, so it is not empty
             cellData.mainValue = number;
             cellData.isEmpty = false;
-            GridManager.ChangeCountOfDifNum(number, 1);
+            if(GridManager)
+                GridManager.ChangeCountOfDifNum(number, 1);
 
             ChangeTextNumber(cellData.mainValue.ToString(), notChangableNumberColor);
         }

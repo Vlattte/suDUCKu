@@ -137,7 +137,7 @@ Library: lib_burst_generated
 --root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Unity.Notifications.Android.dll
 --root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Unity.Services.Core.Configuration.dll
 --root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Unity.Services.Core.dll
---root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Assembly-CSharp.dll
+--root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Scripts.dll
 --root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Unity.Services.Core.Environments.dll
 --root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Unity.2D.SpriteShape.Runtime.dll
 --root-assembly=D:\unity\suducku\Temp\StagingArea\Data\Managed\Unity.Services.Core.Networking.dll
