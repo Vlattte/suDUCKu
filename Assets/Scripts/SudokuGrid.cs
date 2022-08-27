@@ -6,10 +6,15 @@ using UnityEngine.UI;
 [System.Serializable]
 public struct SaveDataStruct
 {
-    [SerializeField] public ModesStruct modes;
-    [SerializeField] public CellStruct[] cells;
-    [SerializeField] public float timerValue;
+    [SerializeField] public ModesStruct modes;      //choosen modes
+    [SerializeField] public CellStruct[] cells;     //numbers and notes in cells
+    [SerializeField] public float timerValue;       //time spent on current sudoku
     [SerializeField] public int[] countOfDifNums;   //count of all types of nums
+
+    //
+    [SerializeField] public int countRightNumbers;
+    [SerializeField] public int livesLeft;
+    [SerializeField] public int hintCount;
 }
 
 public class SudokuGrid : MonoBehaviour
@@ -26,7 +31,7 @@ public class SudokuGrid : MonoBehaviour
 
     private bool isEnterBigNumbers;         // enter mode: is user enter notes or big numbers in cell (false for notes)
 
-    public int[] countOfDifNums;           //count of all types of nums
+    public int[] countOfDifNums;            //count of all types of nums
     private int countRightNumbers;          // count number of right filled cells, if equal to 81, game is won
     private int hintCount;                  // number of available hints
     private int activeCellX, activeCellY;   // position of hightlighted cell (suducku table positions: from 0 to 80)
@@ -54,6 +59,8 @@ public class SudokuGrid : MonoBehaviour
             cells = SudokuData.cells;
             Timer.GetComponent<TimerScript>().ManageTimerValue = SudokuData.timerValue;
             countOfDifNums = SudokuData.countOfDifNums;
+            countRightNumbers = SudokuData.countRightNumbers;
+            hintCount = SudokuData.hintCount;
 
             CellsToSudokuTable();
             File.Delete(saveFilePath);
@@ -70,15 +77,15 @@ public class SudokuGrid : MonoBehaviour
         //if continue mode
         if (DataHolder.IsContinueMode)
         {
-            //count of not filled cells
-            GetGridPrefs();
+            ////GetGridPrefs();
+            lives.CheckIsLivesRight(SudokuData.livesLeft);
 
             DataHolder.ManageModes = SudokuData.modes;
         }
         else
         {
             //clear prefs needed to grid
-            ClearGridPrefs();
+            ////ClearGridPrefs();
 
             InitCountOfDifNums();
             SetRightNumberCount();
@@ -173,9 +180,9 @@ public class SudokuGrid : MonoBehaviour
         CheckCountOfDifNums(number);
     }
 
+    //number of amount of each number
     void CheckCountOfDifNums(int number)
     {
-
         Debug.Log(countOfDifNums[number - 1]);
         if (countOfDifNums[number-1] == 9)
         {
@@ -203,13 +210,11 @@ public class SudokuGrid : MonoBehaviour
             ChangeCountOfDifNum(number, 1);
             ChangeRightNumberCount(1);
         }
-        else
+        else 
         {
+            //so it's mistake
             if (!isNote)
-            {
-                //so it's mistake
                 ManageMistakesCount();
-            }
         }
         
     }
@@ -231,7 +236,7 @@ public class SudokuGrid : MonoBehaviour
 
     public void SaveCurCells()
     {
-        SetGridPrefs();
+        ////SetGridPrefs();
 
         for (int i = 0; i < 81; i++)
         {
@@ -240,6 +245,10 @@ public class SudokuGrid : MonoBehaviour
         SudokuData.cells = cells;
         SudokuData.timerValue = Timer.GetComponent<TimerScript>().ManageTimerValue;
         SudokuData.countOfDifNums = countOfDifNums;
+
+        SudokuData.hintCount = hintCount;
+        SudokuData.countRightNumbers = countRightNumbers;
+        SudokuData.livesLeft = lives.GetLives();
 
         SaveSystem.SaveData(saveFilePath, SudokuData);
     }

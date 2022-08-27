@@ -197,11 +197,10 @@ public class Cell : MonoBehaviour
         {
             if (cellData.userValue == number)
             {
-                if(MatchUserAndMainValues())
-                {
+                //if(MatchUserAndMainValues())
                     ClearCell();
                     return 0;
-                }
+
             }
             else 
             {
@@ -242,6 +241,7 @@ public class Cell : MonoBehaviour
 
         if (cellData.isEmpty)
         {
+            //manage count of right numbers
             if (cellData.userValue != 0)
             {
                 if (MatchUserAndMainValues())
@@ -336,10 +336,10 @@ public class Cell : MonoBehaviour
     public void ClearCellInRestart()
     {
         ChangeTextNumber(" ", changableNumberColor);
-        ClearCellData();
-
         if (cellData.isAnyNotes > 0)
             ClearNotes();
+
+        ClearCellData();
     }
 
     public int[] ClearCell()

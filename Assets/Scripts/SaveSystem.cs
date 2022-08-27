@@ -16,9 +16,14 @@ public static class SaveSystem
     {
         using (FileStream readStream = new FileStream(_filePath, FileMode.Open))
         {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            T data = (T)binaryFormatter.Deserialize(readStream);
-            return data;
+            if (readStream != null)
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                T data = (T)binaryFormatter.Deserialize(readStream);
+                return data;
+            }
+            DeleteFile(_filePath);
+            return default(T);
         }
     }
 
