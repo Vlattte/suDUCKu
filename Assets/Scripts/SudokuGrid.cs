@@ -11,7 +11,6 @@ public struct SaveDataStruct
     [SerializeField] public float timerValue;       //time spent on current sudoku
     [SerializeField] public int[] countOfDifNums;   //count of all types of nums
 
-    //
     [SerializeField] public int countRightNumbers;
     [SerializeField] public int livesLeft;
     [SerializeField] public int hintCount;
@@ -63,13 +62,13 @@ public class SudokuGrid : MonoBehaviour
             hintCount = SudokuData.hintCount;
 
             CellsToSudokuTable();
-            File.Delete(saveFilePath);
+            //File.Delete(saveFilePath);
         }
     }
 
     private void Start()
     {
-        savePeriod = 10000;
+        savePeriod = 5000;
 
         isSetModes = false;
         saveTimer = 0;
@@ -109,8 +108,13 @@ public class SudokuGrid : MonoBehaviour
 
         //isGenerated = false;
         isEnterBigNumbers = true;
+        SaveCurCells();
+
+        Debug.Log("countRightNumbers = " + countRightNumbers);
     }
 
+    //not used, but saved just in case
+    #region "PlayerPrefs"
     void ClearGridPrefs()
     {
         PlayerPrefs.DeleteKey("countRightNumbers");
@@ -133,10 +137,18 @@ public class SudokuGrid : MonoBehaviour
         hintCount = PlayerPrefs.GetInt("hintCount");
         lives.CheckIsLivesRight(PlayerPrefs.GetInt("livesLeft"));
     }
+    #endregion
+
 
     private void OnApplicationQuit()
     {
         SaveCurCells();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause)
+            SaveCurCells();
     }
 
     private void Update()
@@ -183,10 +195,14 @@ public class SudokuGrid : MonoBehaviour
     //number of amount of each number
     void CheckCountOfDifNums(int number)
     {
-        Debug.Log(countOfDifNums[number - 1]);
+        Debug.Log(number + "  " + countOfDifNums[number - 1]);
         if (countOfDifNums[number-1] == 9)
         {
             NumButtons[number - 1].GetComponent<Image>().color = Color.green;
+        }
+        else if (NumButtons[number - 1].GetComponent<Image>().color == Color.green)
+        {
+            NumButtons[number - 1].GetComponent<Image>().color = Color.white;
         }
         else if(!NumButtons[number - 1].activeInHierarchy)
         {
@@ -276,9 +292,7 @@ public class SudokuGrid : MonoBehaviour
     //Count number of right cells
     public void ChangeRightNumberCount(int _isNumberRight)
     {
-        Debug.Log(_isNumberRight + "  countRightNumbers = " + countRightNumbers);
         countRightNumbers += _isNumberRight;
-        Debug.Log("  After countRightNumbers = " + countRightNumbers);
         if (countRightNumbers == 81)
         {
             WinPanel.SetActive(true);
@@ -353,7 +367,8 @@ public class SudokuGrid : MonoBehaviour
     //user change numbers functions
     public void SetNumberInCell(int number)
     {
-        if(activeCellX != -1)
+        Debug.Log("right nums BEFORE = " + countRightNumbers);
+        if (activeCellX != -1)
         {
             int isRightNumber = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().SetUserNumber(number);
             
@@ -374,6 +389,8 @@ public class SudokuGrid : MonoBehaviour
                 CheckEveryFlagAfterEnter(number, -1, false);
             }
         }
+
+        Debug.Log("right nums AFTER = " + countRightNumbers);
     }
 
     //Set note = value
@@ -477,7 +494,12 @@ public class SudokuGrid : MonoBehaviour
     public void ClearCell()
     {
         int[] values = sudokuTable[activeCellX + activeCellY * 9].GetComponent<Cell>().ClearCell();
-        CheckEveryFlagAfterEnter(values[0], values[1], false);
+        if (values[1] == -1)
+        {
+            ChangeRightNumberCount(-1);
+            ChangeCountOfDifNum(values[0], -1);
+        }
+        //CheckEveryFlagAfterEnter(values[0], values[1], false);
     }
     ///////////////////////////////
 }

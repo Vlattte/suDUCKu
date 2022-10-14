@@ -13,6 +13,7 @@ public class PlayModeTests
     public void SetUp()
     {
         gridManager = GameObject.Instantiate<SudokuGrid>(gridManager);
+        generator = GameObject.Instantiate<SudokuGenerator>(generator);
     }
 
     [UnityTest]

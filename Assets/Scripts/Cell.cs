@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 public class Cell : MonoBehaviour
 {
@@ -8,10 +9,12 @@ public class Cell : MonoBehaviour
     public NotesController notesController; //set number in note cells
 
     //number images
-    public Sprite[] imageNumber;
+    public Sprite[] imageNumbersArray;
+    public List<Image> imgs;
 
     //UI
     public TextMeshProUGUI textNumber;
+    public Image imageNumber;
     public Image backImage;
 
     //Grid controller
@@ -42,18 +45,20 @@ public class Cell : MonoBehaviour
     private void Start()
     {
         GridManager = GameObject.FindGameObjectWithTag("GridManager").GetComponent<SudokuGrid>();
-        cellData.isMistakes = DataHolder.ManageModes.isMistakes; 
-        if (cellData.isMistakes)
-            MakeRightMistakeColor();
+        /* if (cellData.isMistakes)
+         *  MakeRightMistakeColor();*/
+        
 
         if (!DataHolder.IsContinueMode)
         {
+            cellData.isMistakes = DataHolder.ManageModes.isMistakes;
             cellData.noteValuesInCell = new bool[9];
             for (int i = 0; i < 9; i++)
                 cellData.noteValuesInCell[i] = false;   
             cellData.isAnyNotes = 0;
             cellData.userValue = 0;
         }
+        
     }
 
     private void Update()
@@ -112,6 +117,12 @@ public class Cell : MonoBehaviour
         textNumber.color = _color;
     }
 
+    void ChangeImageNumber(int _number, Color _color)
+    {
+        imageNumber.sprite = imageNumbersArray[_number - 1];
+        imageNumber.color = _color; 
+    }
+
     //returns data in cell from save binary file
     //set back uservalue, mainvalue, notes, text color(mistake, hint, not changeble or changable),
     public void ReturnSaveDataInCell()
@@ -121,7 +132,7 @@ public class Cell : MonoBehaviour
             //if user value was in cell 
             if (cellData.userValue != 0)
             {
-                if (cellData.userValue != cellData.mainValue && DataHolder.ManageModes.isMistakes)
+                if (cellData.userValue != cellData.mainValue && cellData.isMistakes)
                 {
                     //if there was a mistake
                     ChangeTextNumber(cellData.userValue.ToString(), new Color(0.5960785f, 0, 0));
@@ -160,6 +171,7 @@ public class Cell : MonoBehaviour
         if (number == 0)
         {
             ChangeTextNumber(" ", changableNumberColor);
+            //ChangeImageNumber(9, Color.white);
             cellData.isEmpty = true;
         }
         else if (number < 0)
@@ -170,6 +182,7 @@ public class Cell : MonoBehaviour
             cellData.isEmpty = true;
 
             ChangeTextNumber(" ", changableNumberColor);
+            //ChangeImageNumber(10, Color.white);
         }
         else
         {
@@ -183,6 +196,7 @@ public class Cell : MonoBehaviour
                 GridManager.ChangeCountOfDifNum(number, 1);
 
             ChangeTextNumber(cellData.mainValue.ToString(), notChangableNumberColor);
+            //ChangeImageNumber(cellData.mainValue, notChangableNumberColor);
         }
     }
 
@@ -200,10 +214,14 @@ public class Cell : MonoBehaviour
                 //if(MatchUserAndMainValues())
                     ClearCell();
                     return 0;
-
             }
             else 
             {
+                // if player decided to delete right number
+                bool was_num_right = false;
+                if (cellData.userValue == cellData.mainValue)
+                    was_num_right = true;
+
                 //if there is any user notes, 
                 //clear them and write number
                 if (cellData.isAnyNotes > 0)
@@ -215,15 +233,19 @@ public class Cell : MonoBehaviour
                 //and set mistake color
                 if (cellData.userValue != cellData.mainValue)
                 {
-                    if(cellData.isMistakes)
+                    if (cellData.isMistakes)
                         ChangeTextNumber(cellData.userValue.ToString(), mistakeColor);
                     else
                         ChangeTextNumber(cellData.userValue.ToString(), changableNumberColor);
+                    if (was_num_right)
+                        return 0;
+                    
                     return -1;
                 }
                 else
                 {
                     ChangeTextNumber(cellData.userValue.ToString(), changableNumberColor);
+                    //ChangeImageNumber(cellData.userValue, changableNumberColor);
                     return 1;
                 }
             } 

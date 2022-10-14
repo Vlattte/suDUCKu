@@ -9,6 +9,7 @@ public static class SaveSystem
         {
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(writeStream, _data);
+            writeStream.Close();
         }
     }
 
@@ -20,9 +21,11 @@ public static class SaveSystem
             {
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 T data = (T)binaryFormatter.Deserialize(readStream);
+                readStream.Close();
                 return data;
             }
             DeleteFile(_filePath);
+            readStream.Close();
             return default(T);
         }
     }
